@@ -74,6 +74,26 @@ php artisan queue:work --tries=3 --timeout=90
 - SQL Server requiere runtime con drivers `msodbcsql` + `pdo_sqlsrv`, lo que aumenta complejidad operativa.
 - Si priorizas menor fricción de operación y costo, PostgreSQL suele ser la opción más directa.
 
+### Render en monorepo (importante)
+
+Si tu repo tiene `frontend/` y `backend/`, el servicio de Render para API debe apuntar a `backend/`.
+
+- **Service Type**: Web Service
+- **Environment**: Docker
+- **Root Directory**: `backend`
+- **Dockerfile Path**: `./Dockerfile`
+
+Con eso Render construye Laravel desde la carpeta donde existen `artisan` y `composer.json`, en lugar de intentar tratar el repo como Node frontend.
+
+### Nota operativa sobre migraciones en arranque
+
+El `Dockerfile` actual ejecuta `php artisan migrate --force` al iniciar para simplificar demo.
+
+Para producción cliente, recomendado:
+
+1. Ejecutar migraciones como proceso controlado en deploy (una vez).
+2. Quitar migraciones del `CMD` para evitar ejecuciones repetidas en reinicios.
+
 ## Verificación post-deploy
 
 - `GET /api/v1/health`
