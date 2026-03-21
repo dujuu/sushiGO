@@ -1,4 +1,4 @@
 export const environment = {
   production: true,
-  apiBaseUrl: 'https://api-demo.tu-dominio.com/api/v1',
+  apiBaseUrl: 'https://sushigo-2.onrender.com/api/v1',
 };
