@@ -41,7 +41,7 @@ export class CartService {
     this.persist();
   }
 
-  updateQuantity(productId: string, quantity: number): void {
+  updateQuantity(productId: number, quantity: number): void {
     const normalizedQuantity = Math.max(1, quantity);
     const current = this.itemsSignal().map((item) =>
       item.product.id === productId
@@ -57,7 +57,7 @@ export class CartService {
     this.persist();
   }
 
-  remove(productId: string): void {
+  remove(productId: number): void {
     this.itemsSignal.set(
       this.itemsSignal().filter((item) => item.product.id !== productId),
     );

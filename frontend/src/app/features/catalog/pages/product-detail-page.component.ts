@@ -16,7 +16,7 @@ import { CartService } from '../../cart/services/cart.service';
         <h1>{{ product.name }}</h1>
         <p>{{ product.description }}</p>
         <p><strong>Ingredientes:</strong> {{ product.ingredients.join(', ') }}</p>
-        <p><strong>{{ product.price | currency : 'USD' : 'symbol' : '1.0-0' }}</strong></p>
+        <p><strong>{{ product.price | currency : 'PEN' : 'symbol' : '1.0-0' }}</strong></p>
         <button class="btn-primary" (click)="add(product)">Agregar al carrito</button>
       </article>
     }

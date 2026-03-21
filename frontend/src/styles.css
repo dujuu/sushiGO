@@ -2,17 +2,21 @@
 @import 'tailwindcss';
 
 :root {
-	--black: #080808;
-	--surface: #111111;
-	--surface-2: #181818;
-	--surface-3: #202020;
-	--border: #252525;
-	--border-2: #303030;
-	--orange: #ff4d00;
-	--orange-dim: rgba(255, 77, 0, 0.12);
+	--space-1: 0.5rem;
+	--space-2: 1rem;
+	--space-3: 1.5rem;
+	--space-4: 2rem;
+	--black: #060607;
+	--surface: #101013;
+	--surface-2: #17171b;
+	--surface-3: #1e1e23;
+	--border: #26262d;
+	--border-2: #32323b;
+	--orange: #ff5a14;
+	--orange-dim: rgba(255, 90, 20, 0.12);
 	--gold: #c89b3c;
-	--white: #fafaf8;
-	--muted: #787068;
+	--white: #f5f3ef;
+	--muted: #a49b92;
 	--font-display: 'Syne', sans-serif;
 	--font-body: 'DM Sans', sans-serif;
 }
@@ -24,10 +28,51 @@
 body {
 	margin: 0;
 	font-family: var(--font-body);
-	background: radial-gradient(circle at top, #141414, var(--black));
+	background:
+		radial-gradient(1200px 650px at 15% -10%, rgba(255, 90, 20, 0.1), transparent 65%),
+		radial-gradient(900px 520px at 90% 8%, rgba(138, 66, 25, 0.12), transparent 70%),
+		linear-gradient(180deg, #0c0c10 0%, var(--black) 48%, #050506 100%);
 	color: var(--white);
-	font-size: 15px;
+	font-size: clamp(0.94rem, 0.82rem + 0.32vw, 1rem);
 	line-height: 1.6;
+	min-height: 100vh;
+	overflow-x: hidden;
+	position: relative;
+}
+
+img,
+svg,
+video,
+canvas {
+	display: block;
+	max-width: 100%;
+	height: auto;
+}
+
+.app-container {
+	margin-inline: auto;
+	max-width: min(100%, 80rem);
+	padding-inline: clamp(0.75rem, 2vw, 1.5rem);
+	width: 100%;
+}
+
+body::before,
+body::after {
+	content: '';
+	pointer-events: none;
+	position: fixed;
+	inset: 0;
+	z-index: -1;
+}
+
+body::before {
+	background:
+		radial-gradient(650px 420px at 50% 14%, rgba(255, 90, 20, 0.08), transparent 72%),
+		radial-gradient(500px 300px at 80% 40%, rgba(255, 255, 255, 0.03), transparent 75%);
+}
+
+body::after {
+	background: linear-gradient(180deg, transparent 0%, rgba(0, 0, 0, 0.32) 100%);
 }
 
 a {
@@ -36,32 +81,37 @@ a {
 }
 
 .card {
-	background-color: var(--surface);
+	background: linear-gradient(180deg, color-mix(in srgb, var(--surface) 92%, #141418 8%), var(--surface));
 	border: 1px solid var(--border);
-	border-radius: 18px;
-	padding: 1rem;
+	border-radius: 16px;
+	padding: clamp(0.85rem, 1.8vw, 1rem);
+	box-shadow: 0 14px 34px rgba(0, 0, 0, 0.28);
 }
 
 .btn-primary {
-	background: var(--orange);
+	background: linear-gradient(180deg, #ff6a2c 0%, var(--orange) 100%);
 	border: none;
-	border-radius: 10px;
+	border-radius: 11px;
 	color: #fff;
 	cursor: pointer;
-	font-weight: 600;
+	font-weight: 700;
+	font-size: clamp(0.85rem, 0.8rem + 0.2vw, 0.92rem);
+	min-height: 2.75rem;
 	padding: 0.75rem 1rem;
-	box-shadow: 0 8px 26px rgba(255, 77, 0, 0.28);
+	box-shadow: 0 10px 24px rgba(255, 90, 20, 0.22);
 	transition: transform 0.12s ease, filter 0.2s ease, box-shadow 0.2s ease;
 }
 
 .btn-secondary {
-	background: transparent;
+	background: rgba(255, 255, 255, 0.02);
 	border: 1px solid var(--border-2);
-	border-radius: 10px;
+	border-radius: 11px;
 	color: var(--white);
 	cursor: pointer;
-	font-weight: 600;
-	padding: 0.75rem 1rem;
+	font-weight: 650;
+	font-size: clamp(0.84rem, 0.78rem + 0.2vw, 0.9rem);
+	min-height: 2.75rem;
+	padding: 0.72rem 1rem;
 	transition: transform 0.12s ease, background 0.2s ease;
 }
 
@@ -71,12 +121,12 @@ a {
 }
 
 .btn-primary:hover {
-	box-shadow: 0 10px 34px rgba(255, 77, 0, 0.38);
+	box-shadow: 0 14px 28px rgba(255, 90, 20, 0.3);
 }
 
 .btn-secondary:hover {
-	background: var(--surface-2);
-	border-color: #3a3a3a;
+	background: color-mix(in srgb, var(--surface-2) 85%, #fff 15%);
+	border-color: #3a3a44;
 }
 
 .btn-primary:disabled,
@@ -100,13 +150,37 @@ h2,
 h3,
 .display-font {
 	font-family: var(--font-display);
-	letter-spacing: -0.4px;
+	letter-spacing: -0.2px;
 }
 
 .eyebrow {
-	color: var(--orange);
-	font-size: 11px;
+	color: color-mix(in srgb, var(--orange) 88%, #ffc8ad 12%);
+	font-size: 0.625rem;
 	font-weight: 700;
-	letter-spacing: 1.4px;
+	letter-spacing: 1.2px;
 	text-transform: uppercase;
+}
+
+@media (min-width: 480px) {
+	.app-container {
+		padding-inline: 1rem;
+	}
+}
+
+@media (min-width: 768px) {
+	.app-container {
+		padding-inline: 1.25rem;
+	}
+}
+
+@media (min-width: 1024px) {
+	.app-container {
+		padding-inline: 1.5rem;
+	}
+}
+
+@media (min-width: 1280px) {
+	body {
+		line-height: 1.65;
+	}
 }

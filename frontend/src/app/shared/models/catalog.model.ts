@@ -1,9 +1,10 @@
 export interface Product {
-  id: string;
+  id: number;
   name: string;
   description: string;
   ingredients: string[];
   price: number;
+  originalPrice?: number;
   imageUrl: string;
   category: string;
   isPromo?: boolean;

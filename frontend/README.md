@@ -71,6 +71,42 @@ npm run build
 npm run test
 ```
 
+## Despliegue en Vercel (SPA estática)
+
+Configuración recomendada para demo/prod inicial:
+
+- **Framework preset**: `Other`
+- **Root directory**: `frontend`
+- **Install command**: `npm install`
+- **Build command**: `npm run build`
+- **Output directory**: `dist/frontend`
+
+### Variables de entorno frontend
+
+Este proyecto usa `environment.ts` para resolver la URL base de API.
+
+- Desarrollo: `src/environments/environment.development.ts`
+- Producción: `src/environments/environment.production.ts`
+
+Debes reemplazar `apiBaseUrl` en producción por la URL pública real del backend Laravel, por ejemplo:
+
+```ts
+apiBaseUrl: 'https://api-demo.tu-dominio.com/api/v1'
+```
+
+### Validación previa al deploy
+
+```bash
+cd frontend
+npm run build
+```
+
+Si compila, Vercel podrá publicar el frontend con rutas SPA.
+
+### Nota importante
+
+No dejes `localhost` en `environment.production.ts`, porque romperá llamadas API en producción.
+
 ## Siguiente etapa sugerida
 
 - Conectar `CatalogService` a endpoints reales de Laravel.

@@ -1,81 +1,97 @@
-import { Injectable } from '@angular/core';
-import { Observable, of } from 'rxjs';
+import { Injectable, signal } from '@angular/core';
+import { map, Observable } from 'rxjs';
 import { Product } from '../../../shared/models/catalog.model';
+import { ProductService } from '../../../core/services/product.service';
+import { PromotionService } from '../../../core/services/promotion.service';
 
 @Injectable({ providedIn: 'root' })
 export class CatalogService {
-  private readonly mockProducts: Product[] = [
-    {
-      id: '1',
-      name: 'Spicy Tuna Roll',
-      description: 'Atún, mayo picante y pepino · 8 piezas.',
-      ingredients: ['Atún', 'Mayo spicy', 'Pepino'],
-      price: 6990,
-      imageUrl: 'https://images.unsplash.com/photo-1617196034183-421b4040ed20?w=900&q=80&fit=crop',
-      badge: 'popular',
-      category: 'spicy',
-      isPromo: true,
-    },
-    {
-      id: '2',
-      name: 'Ebi Tempura Roll',
-      description: 'Camarón apanado, palta y tobiko · 8 piezas.',
-      ingredients: ['Camarón', 'Palta', 'Tobiko'],
-      price: 7490,
-      imageUrl: 'https://images.unsplash.com/photo-1611143669185-af224c5e3252?w=900&q=80&fit=crop',
-      badge: 'new',
-      category: 'rolls',
-    },
-    {
-      id: '3',
-      name: 'Green Palta Roll',
-      description: 'Palta, queso crema y palmito · 8 piezas.',
-      ingredients: ['Palta', 'Queso crema', 'Palmito'],
-      price: 5990,
-      imageUrl: 'https://images.unsplash.com/photo-1553621042-f6e147245754?w=900&q=80&fit=crop',
-      category: 'veggie',
-    },
-    {
-      id: '4',
-      name: 'Dragon Roll',
-      description: 'Salmón, palta y salsa anguila · 8 piezas.',
-      ingredients: ['Salmón', 'Palta', 'Salsa anguila'],
-      price: 8490,
-      imageUrl: 'https://images.unsplash.com/photo-1519984388953-d2406bc725e1?w=900&q=80&fit=crop',
-      badge: 'popular',
-      category: 'rolls',
-    },
-    {
-      id: '5',
-      name: 'Salmon Nigiri ×4',
-      description: 'Salmón fresco sobre arroz de sushi.',
-      ingredients: ['Salmón', 'Arroz'],
-      price: 5490,
-      imageUrl: 'https://images.unsplash.com/photo-1563612116625-3012372fccce?w=900&q=80&fit=crop',
-      category: 'nigiri',
-    },
-    {
-      id: '6',
-      name: 'Combo Familiar 2+1',
-      description: 'Dos rolls + uno gratis para compartir.',
-      ingredients: ['Mix del chef'],
-      price: 19990,
-      imageUrl: 'https://images.unsplash.com/photo-1611143669185-af224c5e3252?w=900&q=80&fit=crop',
-      category: 'combo',
-      badge: 'promo',
-      isPromo: true,
-    },
-  ];
+  private readonly productsSignal = signal<Product[]>([]);
+  private readonly promotionsSignal = signal<Product[]>([]);
+
+  constructor(
+    private readonly productService: ProductService,
+    private readonly promotionService: PromotionService,
+  ) {
+    this.refresh();
+  }
+
+  refresh(): void {
+    this.productService.getProducts({ is_available: true, per_page: 200 }).subscribe((response) => {
+      this.productsSignal.set(response.data.map((product) => this.mapProduct(product)));
+    });
+
+    this.promotionService.getPromotions({ is_active: true, per_page: 200 }).subscribe((response) => {
+      this.promotionsSignal.set(
+        response.data.map((promotion) => ({
+          id: promotion.id,
+          name: promotion.name,
+          description: promotion.description ?? 'Promoción especial.',
+          ingredients: promotion.products.map((item) => item.name),
+          originalPrice: promotion.original_price ? Number(promotion.original_price) : undefined,
+          price: Number(promotion.promo_price),
+          imageUrl: promotion.image || 'https://images.unsplash.com/photo-1611143669185-af224c5e3252?w=900&q=80&fit=crop',
+          category: 'combo',
+          isPromo: true,
+          badge: 'promo',
+        })),
+      );
+    });
+  }
 
   getProducts(): Observable<Product[]> {
-    return of(this.mockProducts);
+    return this.productService.getProducts({ is_available: true, per_page: 200 }).pipe(
+      map((response) => response.data.map((product) => this.mapProduct(product))),
+    );
+  }
+
+  getPromotions(): Observable<Product[]> {
+    return this.promotionService.getPromotions({ is_active: true, per_page: 200 }).pipe(
+      map((response) =>
+        response.data.map((promotion) => ({
+          id: promotion.id,
+          name: promotion.name,
+          description: promotion.description ?? 'Promoción especial.',
+          ingredients: promotion.products.map((item) => item.name),
+          originalPrice: promotion.original_price ? Number(promotion.original_price) : undefined,
+          price: Number(promotion.promo_price),
+          imageUrl: promotion.image || 'https://images.unsplash.com/photo-1611143669185-af224c5e3252?w=900&q=80&fit=crop',
+          category: 'combo',
+          isPromo: true,
+          badge: 'promo' as const,
+        })),
+      ),
+    );
   }
 
   snapshot(): Product[] {
-    return this.mockProducts;
+    return this.productsSignal();
+  }
+
+  promotionsSnapshot(): Product[] {
+    return this.promotionsSignal();
   }
 
   getProductById(id: string): Observable<Product | undefined> {
-    return of(this.mockProducts.find((product) => product.id === id));
+    return this.getProducts().pipe(map((products) => products.find((product) => String(product.id) === id)));
+  }
+
+  private mapProduct(product: {
+    id: number;
+    name: string;
+    description: string | null;
+    price: string;
+    image: string | null;
+  }): Product {
+    return {
+      id: product.id,
+      name: product.name,
+      description: product.description ?? 'Sin descripción disponible.',
+      ingredients: [],
+      price: Number(product.price),
+      imageUrl: product.image || 'https://images.unsplash.com/photo-1611143669185-af224c5e3252?w=900&q=80&fit=crop',
+      category: 'rolls',
+      badge: 'popular',
+    };
   }
 }

@@ -36,7 +36,10 @@ import { CartService } from '../services/cart.service';
         @for (item of cartService.items(); track item.product.id) {
           <article class="card">
             <h2>{{ item.product.name }}</h2>
-            <p class="subtotal">{{ item.subtotal | currency : 'CLP' : 'symbol' : '1.0-0' }}</p>
+            <p class="unit-price">
+              Precio unitario: {{ (item.subtotal / item.quantity) | currency : 'CLP' : 'symbol' : '1.0-0' }}
+            </p>
+            <p class="subtotal">Subtotal: {{ item.subtotal | currency : 'CLP' : 'symbol' : '1.0-0' }}</p>
             <div class="qty-actions">
               <button class="qty-btn" (click)="decrease(item.product.id, item.quantity)">−</button>
               <span class="qty">{{ item.quantity }}</span>
@@ -62,7 +65,7 @@ import { CartService } from '../services/cart.service';
       .layout-grid {
         display: grid;
         gap: 1rem;
-        grid-template-columns: minmax(0, 1fr) 280px;
+        grid-template-columns: 1fr;
       }
 
       .progress-card {
@@ -100,6 +103,12 @@ import { CartService } from '../services/cart.service';
         font-weight: 600;
       }
 
+      .unit-price {
+        color: var(--muted);
+        font-size: 0.8rem;
+        margin-top: -0.1rem;
+      }
+
       .qty-actions {
         align-items: center;
         display: flex;
@@ -132,8 +141,7 @@ import { CartService } from '../services/cart.service';
         display: grid;
         gap: 0.75rem;
         height: fit-content;
-        position: sticky;
-        top: 5.8rem;
+        position: static;
       }
 
       .summary-note {
@@ -152,13 +160,14 @@ import { CartService } from '../services/cart.service';
         color: var(--muted);
       }
 
-      @media (max-width: 900px) {
+      @media (min-width: 1024px) {
         .layout-grid {
-          grid-template-columns: 1fr;
+          grid-template-columns: minmax(0, 1fr) 280px;
         }
 
         .summary {
-          position: static;
+          position: sticky;
+          top: 5.8rem;
         }
       }
     `,
@@ -174,11 +183,11 @@ export class CartPageComponent {
     Math.min((this.cartService.total() / this.freeDeliveryGoal) * 100, 100),
   );
 
-  increase(productId: string, quantity: number): void {
+  increase(productId: number, quantity: number): void {
     this.cartService.updateQuantity(productId, quantity + 1);
   }
 
-  decrease(productId: string, quantity: number): void {
+  decrease(productId: number, quantity: number): void {
     this.cartService.updateQuantity(productId, Math.max(1, quantity - 1));
   }
 }

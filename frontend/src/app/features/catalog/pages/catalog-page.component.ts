@@ -13,24 +13,29 @@ import { CartService } from '../../cart/services/cart.service';
     <section class="hero-section card">
       <div class="hero-content">
         <div class="eyebrow">Abierto ahora · Arica</div>
-        <h1 class="display-font">El sushi que mereces. <span>Siempre fresco.</span></h1>
+        <h1 class="display-font">Sushi fresco, sin vueltas. <span>Listo para pedir hoy.</span></h1>
         <p>
-          Rolls elaborados al momento, ingredientes premium y entrega rápida. Ordena sin registro en pocos pasos.
+          Cocina activa todo el día, rolls preparados al momento y entrega confiable en tu zona. Haz tu pedido en
+          menos de un minuto.
         </p>
+
         <div class="trust-row">
-          <span>⭐ 4.9 en reseñas</span>
-          <span>🕒 20 min promedio</span>
-          <span>✅ Confirmación por WhatsApp</span>
+          <span>⭐ 4.9 en reseñas locales</span>
+          <span>🕒 20–35 min promedio</span>
+          <span>✅ Confirmación inmediata</span>
         </div>
+
         <div class="hero-actions">
           <button class="btn-primary" type="button" (click)="scrollToMenu()">Pedir en 1 minuto</button>
           <a class="btn-secondary" routerLink="/cart">Ver mi pedido</a>
         </div>
-        <p class="urgency-note">🔥 Alta demanda 20:00–22:00 · Pide antes para entrega más rápida</p>
+
+        <p class="urgency-note">Alta demanda 20:00–22:00 · reserva tu horario y evita esperas</p>
       </div>
+
       <img
-        src="https://images.unsplash.com/photo-1617196034183-421b4040ed20?w=900&q=80&fit=crop"
-        alt="Sushi premium"
+        src="https://images.unsplash.com/photo-1579871494447-9811cf80d66c?w=1200&q=80&fit=crop"
+        alt="Equipo de cocina preparando sushi"
       />
     </section>
 
@@ -38,22 +43,7 @@ import { CartService } from '../../cart/services/cart.service';
       <span>🍣 Rolls frescos diarios</span>
       <span>🛵 Delivery en Arica</span>
       <span>🔥 Combo 2x1 martes</span>
-      <span>⭐ +500 pedidos este mes</span>
-    </section>
-
-    <section class="kpi-grid">
-      <article class="card kpi-card">
-        <strong class="display-font">+500</strong>
-        <small>Pedidos en Arica este mes</small>
-      </article>
-      <article class="card kpi-card">
-        <strong class="display-font">96%</strong>
-        <small>Entregas en tiempo estimado</small>
-      </article>
-      <article class="card kpi-card">
-        <strong class="display-font">Top 3</strong>
-        <small>Spicy Tuna, Dragon, Combo 2+1</small>
-      </article>
+      <span>💬 Confirmación por WhatsApp</span>
     </section>
 
     <section class="featured-promos">
@@ -73,11 +63,36 @@ import { CartService } from '../../cart/services/cart.service';
               <h3 class="display-font">{{ promo.name }}</h3>
               <p>{{ promo.description }}</p>
               <div class="promo-actions">
-                <strong>{{ promo.price | currency : 'CLP' : 'symbol' : '1.0-0' }}</strong>
+                <div class="promo-prices">
+                  @if (promo.originalPrice) {
+                    <span class="promo-old">{{ promo.originalPrice | currency : 'CLP' : 'symbol' : '1.0-0' }}</span>
+                  }
+                  <strong>{{ promo.price | currency : 'CLP' : 'symbol' : '1.0-0' }}</strong>
+                </div>
                 <button class="btn-primary" type="button" (click)="add(promo)">Agregar al pedido</button>
               </div>
             </div>
           </article>
+        }
+      </div>
+    </section>
+
+    <section class="category-section">
+      <div class="menu-header">
+        <div>
+          <div class="eyebrow">Categorías</div>
+          <h2 class="display-font">¿Qué quieres comer hoy?</h2>
+        </div>
+        <small>Navegación rápida al menú</small>
+      </div>
+
+      <div class="category-grid">
+        @for (category of categoryHighlights; track category.id) {
+          <button class="category-card" type="button" (click)="setCategoryAndScroll(category.id)">
+            <img [src]="category.imageUrl" [alt]="category.label" />
+            <span class="overlay"></span>
+            <span class="category-label display-font">{{ category.label }}</span>
+          </button>
         }
       </div>
     </section>
@@ -117,6 +132,7 @@ import { CartService } from '../../cart/services/cart.service';
                 <span class="badge" [class]="'badge ' + product.badge">{{ badgeLabel(product.badge) }}</span>
               }
             </div>
+
             <div class="card-body">
               <h3 class="display-font">{{ product.name }}</h3>
               <div class="meta-row">
@@ -124,6 +140,7 @@ import { CartService } from '../../cart/services/cart.service';
                 <span>{{ product.category | titlecase }}</span>
               </div>
               <p>{{ product.description }}</p>
+
               <div class="card-footer">
                 <strong>{{ product.price | currency : 'CLP' : 'symbol' : '1.0-0' }}</strong>
                 <div class="card-actions">
@@ -135,6 +152,42 @@ import { CartService } from '../../cart/services/cart.service';
           </article>
         }
       </div>
+    </section>
+
+    <section class="build-section card">
+      <div class="menu-header build-header">
+        <div>
+          <div class="eyebrow">Arma a tu gusto</div>
+          <h2 class="display-font">Tu roll, en 3 pasos</h2>
+        </div>
+        <small>Simple y rápido para cerrar pedido</small>
+      </div>
+
+      <div class="build-steps">
+        @for (step of buildSteps; track step.id) {
+          <button
+            type="button"
+            class="build-step"
+            [class.active]="activeBuildStep() === step.id"
+            (click)="activeBuildStep.set(step.id)"
+          >
+            <span class="step-n">{{ step.id }}</span>
+            <span>
+              <strong>{{ step.title }}</strong>
+              <small>{{ step.hint }}</small>
+            </span>
+          </button>
+        }
+      </div>
+
+      <article class="build-panel">
+        <h3 class="display-font">Paso {{ activeStepData().id }} · {{ activeStepData().title }}</h3>
+        <p>{{ activeStepData().description }}</p>
+        <div class="build-actions">
+          <button class="btn-secondary" type="button" (click)="scrollToMenu()">Ver ingredientes</button>
+          <a class="btn-primary" routerLink="/checkout">Continuar al pedido</a>
+        </div>
+      </article>
     </section>
 
     @if (cartService.itemCount() > 0) {
@@ -149,22 +202,36 @@ import { CartService } from '../../cart/services/cart.service';
     `
       .hero-section {
         align-items: center;
+        background: linear-gradient(125deg, rgba(255, 90, 20, 0.06), transparent 40%),
+          linear-gradient(180deg, color-mix(in srgb, var(--surface) 94%, #141418 6%), var(--surface));
+        border: 1px solid color-mix(in srgb, var(--border) 88%, #3b2f28 12%);
         display: grid;
         gap: 1rem;
-        grid-template-columns: 1.2fr 1fr;
+        grid-template-columns: 1fr;
         margin-bottom: 1rem;
         overflow: hidden;
         padding: 0;
+        position: relative;
+      }
+
+      .hero-section::after {
+        background: radial-gradient(520px 280px at 83% 10%, rgba(255, 90, 20, 0.14), transparent 72%);
+        content: '';
+        inset: 0;
+        pointer-events: none;
+        position: absolute;
       }
 
       .hero-content {
-        padding: 2rem;
+        padding: 1.2rem;
+        position: relative;
+        z-index: 1;
       }
 
       h1 {
-        font-size: clamp(2rem, 4vw, 3.4rem);
-        line-height: 1.02;
-        margin: 0.4rem 0 0.8rem;
+        font-size: clamp(1.9rem, 3.5vw, 3rem);
+        line-height: 1.07;
+        margin: 0.4rem 0 0.75rem;
       }
 
       h1 span {
@@ -174,127 +241,144 @@ import { CartService } from '../../cart/services/cart.service';
 
       .hero-content p {
         color: var(--muted);
-        max-width: 480px;
+        font-size: 0.94rem;
+        line-height: 1.56;
+        max-width: 500px;
       }
 
       .trust-row {
         display: flex;
         flex-wrap: wrap;
-        gap: 0.5rem;
-        margin-top: 0.8rem;
+        gap: 0.45rem;
+        margin-top: 0.85rem;
       }
 
       .trust-row span {
-        background: var(--surface-2);
-        border: 1px solid var(--border);
-        border-radius: 999px;
-        color: #d8d0c8;
-        font-size: 0.72rem;
+        background: rgba(255, 255, 255, 0.02);
+        border: 1px solid color-mix(in srgb, var(--border) 90%, #fff 10%);
+        border-radius: 9px;
+        color: #dbd3ca;
+        font-size: 0.7rem;
         font-weight: 600;
-        padding: 0.3rem 0.65rem;
+        padding: 0.3rem 0.55rem;
       }
 
       .hero-actions {
         display: flex;
+        flex-direction: column;
         gap: 0.6rem;
-        margin-top: 1rem;
+        margin-top: 1.05rem;
       }
 
       .urgency-note {
-        color: #ffb090;
-        font-size: 0.8rem;
-        margin-top: 0.7rem;
+        color: #c8b4a3;
+        font-size: 0.76rem;
+        letter-spacing: 0.1px;
+        margin-top: 0.68rem;
       }
 
       .hero-section img {
         height: 100%;
-        min-height: 340px;
+        min-height: 260px;
         object-fit: cover;
+        object-position: center 55%;
+        position: relative;
         width: 100%;
+        z-index: 1;
       }
 
       .promo-strip {
         align-items: center;
-        background: var(--orange);
-        border-radius: 12px;
-        color: #fff;
+        background: linear-gradient(180deg, rgba(255, 90, 20, 0.09), rgba(255, 90, 20, 0.06));
+        border: 1px solid color-mix(in srgb, var(--orange) 24%, transparent);
+        border-radius: 11px;
+        color: #f4dfd3;
         display: flex;
         flex-wrap: wrap;
-        font-size: 0.76rem;
-        font-weight: 700;
-        gap: 1rem;
+        font-size: 0.71rem;
+        font-weight: 650;
+        gap: 0.85rem;
         justify-content: center;
-        letter-spacing: 0.6px;
-        margin: 1rem 0;
-        padding: 0.7rem 1rem;
+        letter-spacing: 0.45px;
+        margin: 1rem 0 1.2rem;
+        padding: 0.62rem 0.9rem;
         text-transform: uppercase;
       }
 
-      .kpi-grid {
-        display: grid;
-        gap: 0.8rem;
-        grid-template-columns: repeat(3, minmax(0, 1fr));
-        margin: 1rem 0;
+      .featured-promos,
+      .category-section,
+      .menu-section,
+      .build-section {
+        margin-bottom: 1.4rem;
       }
 
-      .kpi-card {
-        display: grid;
-        gap: 0.2rem;
+      .menu-header {
+        align-items: start;
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+        justify-content: space-between;
+        margin-bottom: 0.75rem;
       }
 
-      .kpi-card strong {
-        font-size: 1.4rem;
+      .menu-header h2 {
+        font-size: clamp(1.6rem, 2.5vw, 2.4rem);
       }
 
-      .kpi-card small {
+      .menu-header small {
         color: var(--muted);
-        font-size: 0.8rem;
-      }
-
-      .featured-promos {
-        margin: 1rem 0 1.6rem;
+        font-size: 0.76rem;
       }
 
       .promo-grid {
         display: grid;
-        gap: 0.8rem;
-        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 0.85rem;
+        grid-template-columns: 1fr;
       }
 
       .promo-card {
+        background: linear-gradient(180deg, color-mix(in srgb, var(--surface) 90%, #18181c 10%), var(--surface));
+        border: 1px solid color-mix(in srgb, var(--border) 86%, #fff 14%);
         overflow: hidden;
         padding: 0;
+        transition: border-color 0.24s ease, transform 0.24s ease;
+      }
+
+      .promo-card:hover {
+        border-color: color-mix(in srgb, var(--orange) 32%, var(--border) 68%);
+        transform: translateY(-2px);
       }
 
       .promo-card img {
-        height: 180px;
+        height: 185px;
         object-fit: cover;
+        object-position: center;
         width: 100%;
       }
 
       .promo-content {
-        padding: 0.9rem;
+        padding: 0.94rem;
       }
 
       .promo-tag {
-        background: var(--orange-dim);
-        border: 1px solid color-mix(in srgb, var(--orange) 45%, transparent);
-        border-radius: 8px;
-        color: var(--orange);
-        font-size: 0.68rem;
+        background: color-mix(in srgb, var(--orange) 16%, transparent);
+        border: 1px solid color-mix(in srgb, var(--orange) 32%, transparent);
+        border-radius: 7px;
+        color: #ffc3a5;
+        font-size: 0.62rem;
         font-weight: 700;
-        padding: 0.25rem 0.45rem;
+        padding: 0.22rem 0.42rem;
         text-transform: uppercase;
       }
 
       .promo-content h3 {
-        font-size: 1.2rem;
+        font-size: 1.12rem;
         margin: 0.45rem 0;
       }
 
       .promo-content p {
         color: var(--muted);
-        font-size: 0.8rem;
+        font-size: 0.79rem;
       }
 
       .promo-actions {
@@ -305,23 +389,66 @@ import { CartService } from '../../cart/services/cart.service';
         margin-top: 0.7rem;
       }
 
-      .menu-section {
-        margin-top: 1.2rem;
+      .promo-actions strong {
+        color: #fff0e8;
+        font-size: 1.12rem;
       }
 
-      .menu-header {
-        align-items: end;
-        display: flex;
-        justify-content: space-between;
-        margin-bottom: 0.7rem;
+      .promo-prices {
+        display: grid;
+        gap: 0.05rem;
       }
 
-      .menu-header h2 {
-        font-size: clamp(1.8rem, 3vw, 2.8rem);
+      .promo-old {
+        color: #b3a79e;
+        font-size: 0.78rem;
+        text-decoration: line-through;
       }
 
-      .menu-header small {
-        color: var(--muted);
+      .category-grid {
+        display: grid;
+        gap: 0.7rem;
+        grid-template-columns: 1fr;
+      }
+
+      .category-card {
+        border: 1px solid color-mix(in srgb, var(--border) 86%, #fff 14%);
+        border-radius: 13px;
+        cursor: pointer;
+        min-height: 120px;
+        overflow: hidden;
+        padding: 0;
+        position: relative;
+        text-align: left;
+        transition: transform 0.22s ease, border-color 0.22s ease;
+      }
+
+      .category-card:hover {
+        border-color: color-mix(in srgb, var(--orange) 34%, var(--border) 66%);
+        transform: translateY(-2px);
+      }
+
+      .category-card img {
+        height: 100%;
+        inset: 0;
+        object-fit: cover;
+        position: absolute;
+        width: 100%;
+      }
+
+      .overlay {
+        background: linear-gradient(180deg, rgba(7, 7, 8, 0.15), rgba(7, 7, 8, 0.78));
+        inset: 0;
+        position: absolute;
+      }
+
+      .category-label {
+        bottom: 0.65rem;
+        color: #fff4ec;
+        font-size: 0.95rem;
+        left: 0.7rem;
+        position: absolute;
+        z-index: 2;
       }
 
       .flash {
@@ -336,45 +463,53 @@ import { CartService } from '../../cart/services/cart.service';
       .cat-tabs {
         display: flex;
         flex-wrap: wrap;
-        gap: 0.5rem;
-        margin-bottom: 1rem;
+        gap: 0.42rem;
+        margin-bottom: 1.05rem;
       }
 
       .cat-tab {
-        background: var(--surface);
-        border: 1px solid var(--border);
-        border-radius: 999px;
+        background: linear-gradient(180deg, rgba(255, 255, 255, 0.015), transparent);
+        border: 1px solid color-mix(in srgb, var(--border) 90%, #fff 10%);
+        border-radius: 10px;
         color: var(--muted);
         cursor: pointer;
-        font-size: 0.78rem;
+        font-size: 0.74rem;
         font-weight: 600;
-        padding: 0.45rem 0.95rem;
-        transition: all 0.2s;
+        letter-spacing: 0.2px;
+        padding: 0.44rem 0.75rem;
+        transition: border-color 0.2s, background 0.2s, color 0.2s;
       }
 
       .cat-tab.active {
-        background: var(--orange-dim);
-        border-color: color-mix(in srgb, var(--orange) 55%, transparent);
-        color: var(--orange);
+        background: color-mix(in srgb, var(--orange) 16%, var(--surface) 84%);
+        border-color: color-mix(in srgb, var(--orange) 40%, var(--border) 60%);
+        color: #ffd4be;
+      }
+
+      .cat-tab:hover {
+        border-color: color-mix(in srgb, var(--border-2) 70%, #fff 30%);
+        color: #dcd3ca;
       }
 
       .grid {
         display: grid;
-        gap: 0.8rem;
-        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 0.9rem;
+        grid-template-columns: 1fr;
       }
 
       .product-card {
-        background: var(--surface);
-        border: 1px solid var(--border);
-        border-radius: 18px;
+        background: linear-gradient(180deg, color-mix(in srgb, var(--surface) 90%, #17171b 10%), var(--surface));
+        border: 1px solid color-mix(in srgb, var(--border) 90%, #fff 10%);
+        border-radius: 15px;
+        box-shadow: 0 14px 26px rgba(0, 0, 0, 0.24);
         overflow: hidden;
-        transition: transform 0.2s, border-color 0.2s;
+        transition: transform 0.22s, border-color 0.22s, box-shadow 0.22s;
       }
 
       .product-card:hover {
-        border-color: color-mix(in srgb, var(--orange) 35%, transparent);
-        transform: translateY(-3px);
+        border-color: color-mix(in srgb, var(--orange) 30%, var(--border) 70%);
+        box-shadow: 0 20px 34px rgba(0, 0, 0, 0.3);
+        transform: translateY(-2px);
       }
 
       .img-wrap {
@@ -383,65 +518,69 @@ import { CartService } from '../../cart/services/cart.service';
       }
 
       .img-wrap img {
-        aspect-ratio: 1 / 1;
+        aspect-ratio: 4 / 3;
         object-fit: cover;
         width: 100%;
       }
 
       .badge {
-        border-radius: 8px;
+        backdrop-filter: blur(8px);
+        border-radius: 7px;
         color: #fff;
-        font-size: 0.62rem;
+        font-size: 0.58rem;
         font-weight: 700;
         left: 0.65rem;
-        letter-spacing: 0.4px;
-        padding: 0.3rem 0.5rem;
+        letter-spacing: 0.35px;
+        padding: 0.24rem 0.44rem;
         position: absolute;
         text-transform: uppercase;
         top: 0.65rem;
       }
 
       .badge.popular {
-        background: var(--orange);
+        background: color-mix(in srgb, var(--orange) 88%, #000 12%);
       }
 
       .badge.new {
-        background: var(--gold);
+        background: color-mix(in srgb, var(--gold) 86%, #000 14%);
         color: #161616;
       }
 
       .badge.promo {
-        background: #2d7a50;
+        background: color-mix(in srgb, #2d7a50 88%, #000 12%);
       }
 
       .card-body {
-        padding: 0.85rem;
+        padding: 0.88rem;
       }
 
       .card-body h3 {
-        font-size: 1rem;
+        font-size: 1.02rem;
+        line-height: 1.2;
+        margin-bottom: 0.32rem;
       }
 
       .meta-row {
         display: flex;
-        font-size: 0.7rem;
+        font-size: 0.67rem;
         gap: 0.4rem;
         margin-bottom: 0.35rem;
       }
 
       .meta-row span {
-        background: var(--surface-2);
-        border: 1px solid var(--border);
+        background: rgba(255, 255, 255, 0.02);
+        border: 1px solid color-mix(in srgb, var(--border) 88%, #fff 12%);
         border-radius: 999px;
-        color: #c9bfb5;
+        color: #bfb5ac;
         padding: 0.18rem 0.4rem;
         text-transform: capitalize;
       }
 
       .card-body p {
         color: var(--muted);
-        font-size: 0.8rem;
-        margin: 0.45rem 0 0.7rem;
+        font-size: 0.79rem;
+        line-height: 1.45;
+        margin: 0.42rem 0 0.66rem;
         min-height: 40px;
       }
 
@@ -451,17 +590,108 @@ import { CartService } from '../../cart/services/cart.service';
       }
 
       .card-footer strong {
-        font-size: 1.1rem;
+        color: #fff0e8;
+        font-size: 1.15rem;
+        letter-spacing: 0.2px;
       }
 
       .card-actions {
         display: flex;
-        gap: 0.45rem;
+        gap: 0.42rem;
       }
 
       .card-actions > * {
         flex: 1;
         text-align: center;
+      }
+
+      .build-section {
+        border: 1px solid color-mix(in srgb, var(--border) 84%, #fff 16%);
+        padding: 1rem;
+      }
+
+      .build-header {
+        margin-bottom: 0.9rem;
+      }
+
+      .build-steps {
+        display: grid;
+        gap: 0.55rem;
+        grid-template-columns: 1fr;
+        margin-bottom: 0.85rem;
+      }
+
+      .build-step {
+        align-items: center;
+        background: color-mix(in srgb, var(--surface-2) 85%, #fff 15%);
+        border: 1px solid var(--border-2);
+        border-radius: 12px;
+        color: var(--muted);
+        cursor: pointer;
+        display: flex;
+        gap: 0.55rem;
+        padding: 0.55rem;
+        text-align: left;
+        transition: border-color 0.2s, transform 0.2s, color 0.2s;
+      }
+
+      .build-step:hover {
+        border-color: color-mix(in srgb, var(--orange) 28%, var(--border) 72%);
+        transform: translateY(-1px);
+      }
+
+      .build-step.active {
+        border-color: color-mix(in srgb, var(--orange) 38%, var(--border) 62%);
+        color: #ecd9ca;
+      }
+
+      .step-n {
+        align-items: center;
+        background: color-mix(in srgb, var(--orange) 20%, transparent);
+        border-radius: 999px;
+        color: #ffd7c0;
+        display: inline-flex;
+        font-size: 0.72rem;
+        font-weight: 700;
+        height: 26px;
+        justify-content: center;
+        min-width: 26px;
+      }
+
+      .build-step strong {
+        display: block;
+        font-size: 0.8rem;
+      }
+
+      .build-step small {
+        color: var(--muted);
+        display: block;
+        font-size: 0.7rem;
+      }
+
+      .build-panel {
+        background: linear-gradient(180deg, color-mix(in srgb, var(--surface-2) 70%, #101013 30%), var(--surface));
+        border: 1px solid color-mix(in srgb, var(--border) 88%, #fff 12%);
+        border-radius: 12px;
+        padding: 0.85rem;
+      }
+
+      .build-panel h3 {
+        font-size: 1.05rem;
+        margin: 0 0 0.35rem;
+      }
+
+      .build-panel p {
+        color: var(--muted);
+        font-size: 0.84rem;
+        margin: 0;
+      }
+
+      .build-actions {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+        margin-top: 0.75rem;
       }
 
       .mobile-cart-cta {
@@ -471,7 +701,7 @@ import { CartService } from '../../cart/services/cart.service';
         bottom: 0.75rem;
         box-shadow: 0 10px 30px rgba(255, 77, 0, 0.35);
         color: #fff;
-        display: none;
+        display: inline-flex;
         font-size: 0.82rem;
         font-weight: 700;
         justify-content: space-between;
@@ -482,48 +712,73 @@ import { CartService } from '../../cart/services/cart.service';
         z-index: 45;
       }
 
-      @media (max-width: 1050px) {
+      @media (min-width: 480px) {
+        .category-grid {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+
+        .hero-content {
+          padding: 1.4rem;
+        }
+      }
+
+      @media (min-width: 768px) {
+        .hero-section {
+          grid-template-columns: 1.2fr 1fr;
+        }
+
+        .hero-actions {
+          flex-direction: row;
+        }
+
+        .hero-section img {
+          min-height: 320px;
+        }
+
+        .promo-grid {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+
+        .category-grid {
+          grid-template-columns: repeat(3, minmax(0, 1fr));
+        }
+
+        .menu-header {
+          align-items: end;
+          flex-direction: row;
+          gap: 0;
+        }
+
+        .build-actions {
+          flex-direction: row;
+        }
+
+        .mobile-cart-cta {
+          display: none;
+        }
+      }
+
+      @media (min-width: 1024px) {
         .grid {
+          grid-template-columns: repeat(3, minmax(0, 1fr));
+        }
+
+        .category-grid {
+          grid-template-columns: repeat(3, minmax(0, 1fr));
+        }
+
+        .build-steps {
           grid-template-columns: repeat(3, minmax(0, 1fr));
         }
       }
 
-      @media (max-width: 900px) {
-        .hero-section {
-          grid-template-columns: 1fr;
-        }
-
-        .hero-section img {
-          min-height: 260px;
-        }
-
+      @media (min-width: 1280px) {
         .grid {
-          grid-template-columns: repeat(2, minmax(0, 1fr));
+          grid-template-columns: repeat(4, minmax(0, 1fr));
         }
 
-        .kpi-grid,
-        .promo-grid {
-          grid-template-columns: 1fr;
-        }
-      }
-
-      @media (max-width: 600px) {
-        .hero-content {
-          padding: 1.2rem;
-        }
-
-        .menu-header {
-          align-items: start;
-          flex-direction: column;
-          gap: 0.5rem;
-        }
-
-        .grid {
-          grid-template-columns: 1fr;
-        }
-
-        .mobile-cart-cta {
-          display: inline-flex;
+        .category-grid {
+          grid-template-columns: repeat(4, minmax(0, 1fr));
         }
       }
     `,
@@ -543,9 +798,64 @@ export class CatalogPageComponent {
     { id: 'nigiri', label: 'Nigiri' },
     { id: 'combo', label: 'Combos' },
   ];
-  readonly promoProducts = computed(() =>
-    this.catalogService.snapshot().filter((product: Product) => product.isPromo),
+
+  readonly categoryHighlights = [
+    {
+      id: 'rolls',
+      label: 'Rolls clásicos',
+      imageUrl: 'https://images.unsplash.com/photo-1611143669185-af224c5e3252?w=900&q=80&fit=crop',
+    },
+    {
+      id: 'spicy',
+      label: 'Spicy',
+      imageUrl: 'https://images.unsplash.com/photo-1617196034183-421b4040ed20?w=900&q=80&fit=crop',
+    },
+    {
+      id: 'veggie',
+      label: 'Veggie',
+      imageUrl: 'https://images.unsplash.com/photo-1553621042-f6e147245754?w=900&q=80&fit=crop',
+    },
+    {
+      id: 'combo',
+      label: 'Combos',
+      imageUrl: 'https://images.unsplash.com/photo-1519984388953-d2406bc725e1?w=900&q=80&fit=crop',
+    },
+  ];
+
+  readonly buildSteps = [
+    {
+      id: 1,
+      title: 'Elige base',
+      hint: 'Roll, nigiri o combo',
+      description:
+        'Parte por tu base favorita. Si quieres resolver rápido, los combos del día son la opción más conveniente.',
+    },
+    {
+      id: 2,
+      title: 'Personaliza',
+      hint: 'Salsas e ingredientes',
+      description:
+        'Ajusta picante, agrega extras y define observaciones. Nuestro equipo revisa cada detalle antes de despachar.',
+    },
+    {
+      id: 3,
+      title: 'Confirma pedido',
+      hint: 'Pago y despacho',
+      description:
+        'Cierra en checkout y confirma por WhatsApp si necesitas algo puntual. El precio final siempre se muestra claro.',
+    },
+  ];
+
+  readonly activeBuildStep = signal(1);
+
+  readonly activeStepData = computed(() =>
+    this.buildSteps.find((step) => step.id === this.activeBuildStep()) ?? this.buildSteps[0],
   );
+
+  readonly promoProducts = computed(() =>
+    this.catalogService.promotionsSnapshot(),
+  );
+
   readonly filteredProducts = computed(() => {
     const category = this.activeCategory();
     if (category === 'todos') {
@@ -573,6 +883,11 @@ export class CatalogPageComponent {
     }
 
     return 'Promo';
+  }
+
+  setCategoryAndScroll(categoryId: string): void {
+    this.activeCategory.set(categoryId);
+    this.scrollToMenu();
   }
 
   scrollToMenu(): void {

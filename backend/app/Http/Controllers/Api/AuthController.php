@@ -22,6 +22,7 @@ class AuthController extends Controller
             'name' => $payload['name'],
             'email' => $payload['email'],
             'password' => Hash::make($payload['password']),
+            'role' => User::ROLE_CUSTOMER,
         ]);
 
         $token = $user->createToken($request->userAgent() ?? 'api-token')->plainTextToken;

@@ -15,11 +15,21 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // User::factory(10)->create();
+        User::factory()->create([
+            'name' => 'Admin SushiGo',
+            'email' => 'admin@sushigo.local',
+            'role' => User::ROLE_ADMIN,
+        ]);
 
         User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
+            'name' => 'Cliente Demo',
+            'email' => 'cliente@sushigo.local',
+            'role' => User::ROLE_CUSTOMER,
+        ]);
+
+        $this->call([
+            ProductSeeder::class,
+            PromotionSeeder::class,
         ]);
     }
 }

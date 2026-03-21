@@ -1,0 +1,59 @@
+import { Component, computed, input } from '@angular/core';
+
+@Component({
+  selector: 'app-status-badge',
+  standalone: true,
+  template: `<span class="badge" [class]="badgeClass()">{{ label() }}</span>`,
+  styles: [
+    `
+      .badge {
+        border-radius: 999px;
+        display: inline-flex;
+        font-size: 0.68rem;
+        font-weight: 700;
+        letter-spacing: 0.2px;
+        padding: 0.22rem 0.55rem;
+        text-transform: capitalize;
+      }
+
+      .pending,
+      .inactiva,
+      .oculto {
+        background: rgba(255, 184, 107, 0.16);
+        color: #ffc990;
+      }
+
+      .confirmed,
+      .preparing,
+      .visible,
+      .active,
+      .activa {
+        background: rgba(82, 201, 152, 0.16);
+        color: #a7eecf;
+      }
+
+      .delivering {
+        background: rgba(127, 154, 255, 0.18);
+        color: #c5d2ff;
+      }
+
+      .completed {
+        background: rgba(112, 215, 185, 0.16);
+        color: #acefdc;
+      }
+
+      .cancelled {
+        background: rgba(243, 96, 115, 0.18);
+        color: #ffb2bf;
+      }
+    `,
+  ],
+})
+export class StatusBadgeComponent {
+  readonly label = input.required<string>();
+
+  readonly badgeClass = computed(() => {
+    const key = this.label().toLowerCase().trim().replaceAll(' ', '-');
+    return `badge ${key}`;
+  });
+}

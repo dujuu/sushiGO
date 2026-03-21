@@ -13,8 +13,9 @@ import { OrdersService } from '../services/orders.service';
     @if (status$ | async; as status) {
       <article class="card">
         <p><strong>ID:</strong> {{ status.id }}</p>
+        <p><strong>Número:</strong> {{ status.order_number }}</p>
         <p><strong>Estado:</strong> {{ status.status }}</p>
-        <p><strong>Actualizado:</strong> {{ status.updatedAt }}</p>
+        <p><strong>Actualizado:</strong> {{ status.updated_at }}</p>
       </article>
     }
   `,
@@ -26,5 +27,6 @@ export class OrderStatusPageComponent {
   readonly status$ = this.route.paramMap.pipe(
     map((params) => params.get('id') ?? ''),
     switchMap((id) => this.ordersService.status(id)),
+    map((response) => response.data),
   );
 }
