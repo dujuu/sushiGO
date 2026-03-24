@@ -1,21 +1,19 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { CartService } from '../../features/cart/services/cart.service';
-import { FooterComponent } from '../../shared/components/footer/footer.component';
 
 @Component({
   selector: 'app-shell',
   standalone: true,
-  imports: [RouterOutlet, RouterLink, RouterLinkActive, FooterComponent],
+  imports: [RouterOutlet, RouterLink, RouterLinkActive],
   template: `
     <header class="shell-header">
-      <a class="brand" routerLink="/home">
+      <a class="brand" routerLink="/catalog">
         <span class="brand-mark">🍣</span>
         <span class="brand-text display-font">Sushi<span>Go</span></span>
       </a>
 
       <nav [class.open]="isMobileMenuOpen()">
-        <a routerLink="/home" routerLinkActive="active" (click)="closeMobileMenu()">Inicio</a>
         <a routerLink="/catalog" routerLinkActive="active" (click)="closeMobileMenu()">Menú</a>
         <a routerLink="/promotions" routerLinkActive="active" (click)="closeMobileMenu()">Promos</a>
         <a routerLink="/checkout" routerLinkActive="active" (click)="closeMobileMenu()">Pedido</a>
@@ -41,7 +39,77 @@ import { FooterComponent } from '../../shared/components/footer/footer.component
       <router-outlet />
     </main>
 
-    <app-footer />
+    <footer class="shell-footer">
+      <div class="shell-footer-inner">
+        <section class="footer-grid">
+          <div class="footer-col">
+            <h4 class="display-font">SushiGo</h4>
+            <a routerLink="/catalog">Carta sushi</a>
+            <a routerLink="/promotions">Promociones</a>
+            <a routerLink="/checkout">Arma tu pedido</a>
+            <a routerLink="/cart">Mi carrito</a>
+          </div>
+
+          <div class="footer-col">
+            <h4 class="display-font">Ayuda</h4>
+            <a href="#" rel="nofollow">Contacto</a>
+            <a href="#" rel="nofollow">Preguntas frecuentes</a>
+            <a href="#" rel="nofollow">Términos y condiciones</a>
+            <a href="#" rel="nofollow">Sugerencias y reclamos</a>
+          </div>
+
+          <div class="footer-col">
+            <h4 class="display-font">Síguenos</h4>
+            <div class="social-row" aria-label="Redes sociales SushiGo">
+              <a href="#" class="social-btn" aria-label="Facebook" rel="nofollow">
+                <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M14.1 8.4h1.7V6h-2c-2 0-3.2 1.2-3.2 3.3v1.4H8.9V13h1.7v5h2.6v-5h2.2l.3-2.3h-2.5V9.5c0-.7.2-1.1.9-1.1Z" fill="currentColor"/></svg>
+              </a>
+              <a href="#" class="social-btn" aria-label="Instagram" rel="nofollow">
+                <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M7.8 3h8.4A4.8 4.8 0 0 1 21 7.8v8.4a4.8 4.8 0 0 1-4.8 4.8H7.8A4.8 4.8 0 0 1 3 16.2V7.8A4.8 4.8 0 0 1 7.8 3Zm8.5 1.7a3.2 3.2 0 0 1 3.2 3.2v8.2a3.2 3.2 0 0 1-3.2 3.2H7.9a3.2 3.2 0 0 1-3.2-3.2V7.9a3.2 3.2 0 0 1 3.2-3.2h8.4Zm-4.2 2.8a4.6 4.6 0 1 0 0 9.2 4.6 4.6 0 0 0 0-9.2Zm0 1.7a2.9 2.9 0 1 1 0 5.8 2.9 2.9 0 0 1 0-5.8Zm4.9-2.2a1.1 1.1 0 1 0 0 2.2 1.1 1.1 0 0 0 0-2.2Z" fill="currentColor"/></svg>
+              </a>
+              <a href="#" class="social-btn" aria-label="TikTok" rel="nofollow">
+                <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M14.5 4.2c.6 1.1 1.5 2 2.7 2.4V9a6.1 6.1 0 0 1-2.7-.7v5.2a4.5 4.5 0 1 1-4.4-4.5v2.5a2 2 0 1 0 1.9 2V3h2.5v1.2Z" fill="currentColor"/></svg>
+              </a>
+            </div>
+            <small>Atención todos los días de 12:30 a 23:00</small>
+          </div>
+
+          <div class="footer-col badges-col">
+            <h4 class="display-font">Pagos</h4>
+            <div class="payment-grid" aria-label="Métodos de pago">
+              <span class="pay-badge">Visa</span>
+              <span class="pay-badge">Mastercard</span>
+              <span class="pay-badge">Redcompra</span>
+              <span class="pay-badge">Transbank</span>
+              <span class="pay-badge">Edenred</span>
+            </div>
+          </div>
+        </section>
+
+        <div class="footer-bottom">
+          <span>© {{ currentYear }} SushiGo · Arica, Chile</span>
+          <span>Pedidos rápidos, claros y sin fricción</span>
+        </div>
+
+        <div class="footer-credit">
+          <span>Desarrollado por Juan Meneses</span>
+          <a
+            href="https://www.linkedin.com/in/juan-meneses-mu%C3%B1oz/"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="LinkedIn de Juan Meneses"
+          >
+            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path
+                d="M6.2 8.3a1.8 1.8 0 1 0 0-3.6 1.8 1.8 0 0 0 0 3.6ZM4.7 9.8h3v9.5h-3V9.8Zm4.9 0h2.9v1.3h.1c.4-.8 1.4-1.6 2.9-1.6 3.1 0 3.6 2 3.6 4.7v5.1h-3v-4.5c0-1.1 0-2.5-1.5-2.5s-1.8 1.2-1.8 2.4v4.6h-3V9.8Z"
+                fill="currentColor"
+              />
+            </svg>
+            <span>LinkedIn</span>
+          </a>
+        </div>
+      </div>
+    </footer>
 
     <a
       class="whatsapp-float"
@@ -206,6 +274,151 @@ import { FooterComponent } from '../../shared/components/footer/footer.component
         padding: calc(4.25rem + 1rem) clamp(0.75rem, 2.5vw, 1.5rem) 1rem;
       }
 
+      .shell-footer {
+        background: linear-gradient(to top, #0a0a0a, #0f0f0f, #121212);
+        border-top: 1px solid rgba(156, 163, 175, 0.16);
+        margin-top: 1.2rem;
+      }
+
+      .shell-footer-inner {
+        margin: 0 auto;
+        max-width: 1120px;
+        padding: 1.6rem 1rem 1rem;
+      }
+
+      .footer-grid {
+        display: grid;
+        gap: 1.45rem;
+        grid-template-columns: 1fr;
+      }
+
+      .footer-col {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+      }
+
+      .footer-col h4 {
+        color: #e5e5e5;
+        font-size: 0.95rem;
+        letter-spacing: 0.1px;
+        margin: 0 0 0.2rem;
+      }
+
+      .footer-col a {
+        color: #9ca3af;
+        font-size: 0.82rem;
+        transition: color 0.2s ease;
+        width: fit-content;
+      }
+
+      .footer-col a:hover {
+        color: #ff5a1f;
+      }
+
+      .social-row {
+        display: flex;
+        gap: 0.55rem;
+      }
+
+      .social-btn {
+        align-items: center;
+        background: #121212;
+        border: 1px solid rgba(156, 163, 175, 0.22);
+        border-radius: 12px;
+        color: #9ca3af;
+        display: inline-flex;
+        height: 32px;
+        justify-content: center;
+        transition: border-color 0.2s ease, box-shadow 0.2s ease, color 0.2s ease, transform 0.2s ease;
+        width: 32px;
+      }
+
+      .social-btn:hover {
+        border-color: rgba(255, 90, 31, 0.42);
+        box-shadow: 0 0 0 1px rgba(255, 90, 31, 0.18), 0 6px 14px rgba(255, 90, 31, 0.16);
+        color: #ff5a1f;
+        transform: translateY(-1px);
+      }
+
+      .social-btn svg {
+        height: 16px;
+        width: 16px;
+      }
+
+      .footer-col small {
+        color: #9ca3af;
+        font-size: 0.73rem;
+        margin-top: 0.25rem;
+      }
+
+      .badges-col {
+        align-items: flex-start;
+      }
+
+      .payment-grid {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.48rem;
+      }
+
+      .pay-badge {
+        background: #121212;
+        border: 1px solid rgba(156, 163, 175, 0.2);
+        border-radius: 10px;
+        color: #e5e5e5;
+        display: inline-flex;
+        font-size: 0.69rem;
+        font-weight: 700;
+        letter-spacing: 0.1px;
+        padding: 0.38rem 0.64rem;
+        transition: border-color 0.2s ease, background-color 0.2s ease;
+      }
+
+      .pay-badge:hover {
+        background: #171717;
+        border-color: rgba(255, 90, 31, 0.28);
+      }
+
+      .footer-bottom {
+        border-top: 1px solid rgba(156, 163, 175, 0.2);
+        color: #9ca3af;
+        display: flex;
+        flex-direction: column;
+        font-size: 0.76rem;
+        gap: 0.35rem;
+        margin-top: 1.2rem;
+        padding-top: 0.9rem;
+      }
+
+      .footer-credit {
+        align-items: center;
+        color: #9ca3af;
+        display: flex;
+        flex-direction: column;
+        font-size: 0.74rem;
+        gap: 0.35rem;
+        margin-top: 0.7rem;
+        text-align: center;
+      }
+
+      .footer-credit a {
+        align-items: center;
+        color: #9ca3af;
+        display: inline-flex;
+        gap: 0.28rem;
+        transition: color 0.2s ease;
+      }
+
+      .footer-credit a:hover {
+        color: #ff5a1f;
+      }
+
+      .footer-credit a svg {
+        height: 13px;
+        width: 13px;
+      }
+
       .whatsapp-float {
         align-items: center;
         background: #25d366;
@@ -242,6 +455,12 @@ import { FooterComponent } from '../../shared/components/footer/footer.component
         }
       }
 
+      @media (min-width: 480px) {
+        .footer-grid {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+      }
+
       @media (min-width: 768px) {
         nav {
           background: transparent;
@@ -264,6 +483,17 @@ import { FooterComponent } from '../../shared/components/footer/footer.component
         }
       }
 
+      @media (min-width: 1024px) {
+        .footer-grid {
+          grid-template-columns: 1fr 1fr 1fr 1.2fr;
+        }
+
+        .footer-bottom {
+          flex-direction: row;
+          justify-content: space-between;
+        }
+      }
+
       @media (min-width: 1280px) {
         .shell-main {
           padding-inline: 1.75rem;
@@ -275,6 +505,8 @@ import { FooterComponent } from '../../shared/components/footer/footer.component
 export class ShellComponent {
   readonly cartService = inject(CartService);
   readonly isMobileMenuOpen = signal(false);
+  readonly hasItems = computed(() => this.cartService.itemCount() > 0);
+  readonly currentYear = new Date().getFullYear();
 
   toggleMobileMenu(): void {
     this.isMobileMenuOpen.update((value) => !value);
