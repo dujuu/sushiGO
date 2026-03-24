@@ -15,6 +15,7 @@ export interface Promotion {
   promo_price: string;
   image: string | null;
   is_active: boolean;
+  is_real_promotion: boolean;
   products: PromotionProductView[];
   created_at: string;
   updated_at: string;

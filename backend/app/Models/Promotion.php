@@ -31,4 +31,23 @@ class Promotion extends Model
             ->withPivot('quantity')
             ->withTimestamps();
     }
+
+    public function isRealPromotion(): bool
+    {
+        $promoPrice = (float) $this->promo_price;
+
+        if ($this->original_price !== null) {
+            return $promoPrice < (float) $this->original_price;
+        }
+
+        if ($this->relationLoaded('products') && $this->products->isNotEmpty()) {
+            $calculatedOriginalPrice = $this->products->sum(
+                fn (Product $product) => (float) $product->price * max(1, (int) ($product->pivot->quantity ?? 1)),
+            );
+
+            return $promoPrice < (float) $calculatedOriginalPrice;
+        }
+
+        return false;
+    }
 }

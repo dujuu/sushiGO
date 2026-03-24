@@ -1,44 +1,57 @@
-import { NgFor, NgIf } from '@angular/common';
-import { Component, computed, signal } from '@angular/core';
+import { CurrencyPipe, NgFor, NgIf } from '@angular/common';
+import { Component, computed, inject, signal } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { RouterLink } from '@angular/router';
+import { catchError, map, of } from 'rxjs';
+import { SUSHI_GO_BUSINESS_PROFILE, SUSHI_GO_OPENING_HOURS_TEXT } from '../../../core/config/business-profile';
+import { OFFICIAL_MENU_CATEGORIES, OFFICIAL_MENU_PRODUCTS } from '../../../core/data/official-menu.data';
+import { Product } from '../../../shared/models/catalog.model';
+import { PromotionService } from '../../../core/services/promotion.service';
 import { ImageFallbackDirective } from '../../../shared/directives/image-fallback.directive';
-import { Promotion } from '../models/promotion.model';
+import { Promotion } from '../../../core/models/promotion.model';
 
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [NgIf, NgFor, ImageFallbackDirective],
+  imports: [NgIf, NgFor, ImageFallbackDirective, RouterLink, CurrencyPipe],
   templateUrl: './home.component.html',
 })
 export class HomeComponent {
-  readonly promotions = signal<Promotion[]>([
-    {
-      id: 1,
-      titulo: 'Omakase Lunch 20% OFF',
-      descripcion: 'Disponible de lunes a viernes hasta las 16:00.',
-      imagen: 'https://images.unsplash.com/photo-1611143669185-af224c5e3252?w=900&q=80&fit=crop',
-      activa: true,
-    },
-    {
-      id: 2,
-      titulo: 'Premium Nigiri Set',
-      descripcion: '12 piezas seleccionadas por el chef con bebida incluida.',
-      imagen: 'https://images.unsplash.com/photo-1579584425555-c3ce17fd4351?w=900&q=80&fit=crop',
-      activa: true,
-    },
-    {
-      id: 3,
-      titulo: 'Chef Roll Weekend',
-      descripcion: 'Promoción especial en rolls premium.',
-      imagen: 'https://example.com/imagen-invalida.jpg',
-      activa: false,
-    },
-  ]);
+  private readonly promotionService = inject(PromotionService);
 
-  readonly activePromotions = computed(() => this.promotions().filter((promotion) => promotion.activa));
+  readonly businessProfile = SUSHI_GO_BUSINESS_PROFILE;
+  readonly openingHours = SUSHI_GO_OPENING_HOURS_TEXT;
+
+  readonly promotions = toSignal(
+    this.promotionService.getPromotions({ is_active: true, per_page: 12 }).pipe(
+      map((response) => response.data.filter((promotion) => promotion.is_active && promotion.is_real_promotion)),
+      catchError(() => of([] as Promotion[])),
+    ),
+    { initialValue: [] },
+  );
+
+  readonly activePromotions = computed(() => this.promotions());
 
   readonly hasActivePromotions = computed(() => this.activePromotions().length > 0);
 
+  readonly activeCategory = signal('todos');
+  readonly categories = OFFICIAL_MENU_CATEGORIES;
+
+  readonly visibleProducts = computed(() => {
+    const category = this.activeCategory();
+
+    if (category === 'todos') {
+      return OFFICIAL_MENU_PRODUCTS.slice(0, 8);
+    }
+
+    return OFFICIAL_MENU_PRODUCTS.filter((product) => product.category === category).slice(0, 8);
+  });
+
   trackByPromotionId(_: number, promotion: Promotion): number {
     return promotion.id;
+  }
+
+  trackByProductId(_: number, product: Product): number {
+    return product.id;
   }
 }

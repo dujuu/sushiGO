@@ -17,6 +17,7 @@ class PromotionResource extends JsonResource
             'promo_price' => (string) $this->promo_price,
             'image' => $this->image,
             'is_active' => (bool) $this->is_active,
+            'is_real_promotion' => $this->isRealPromotion(),
             'products' => ProductResource::collection($this->whenLoaded('products')),
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,

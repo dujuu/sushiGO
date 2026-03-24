@@ -1,11 +1,59 @@
 <section class="grid gap-4 md:gap-5">
   <header class="rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-5 md:p-6">
-    <span class="eyebrow">Sushi Premium</span>
-    <h1 class="display-font mt-2 text-3xl leading-tight md:text-4xl">Promociones de temporada</h1>
+    <span class="eyebrow">{{ businessProfile.name }} · {{ businessProfile.city }}</span>
+    <h1 class="display-font mt-2 text-3xl leading-tight md:text-4xl">Carta real y pedidos directos</h1>
     <p class="mt-2 max-w-2xl text-sm text-[var(--muted)] md:text-base">
-      Selección activa del día, pensada para una experiencia japonesa moderna y equilibrada.
+      {{ businessProfile.address }} · {{ openingHours }}
     </p>
+
+    <div class="mt-4 flex flex-wrap gap-2">
+      <a routerLink="/catalog" class="btn-primary">Ver menú</a>
+      <a [href]="businessProfile.menuUrl" target="_blank" rel="noopener noreferrer" class="btn-secondary">Ver carta</a>
+      <a [href]="'https://wa.me/' + businessProfile.whatsappApiNumber" target="_blank" rel="noopener noreferrer" class="btn-secondary">Pedir por WhatsApp</a>
+    </div>
   </header>
+
+  <section class="rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-5 md:p-6">
+    <div class="flex flex-col gap-2 md:flex-row md:items-end md:justify-between">
+      <div>
+        <span class="eyebrow">Categorías</span>
+        <h2 class="display-font mt-1 text-2xl leading-tight md:text-3xl">¿Qué quieres comer hoy?</h2>
+      </div>
+      <a routerLink="/catalog" class="btn-secondary w-fit">Ver menú completo</a>
+    </div>
+
+    <div class="mt-4 flex flex-wrap gap-2">
+      <button
+        *ngFor="let category of categories"
+        type="button"
+        class="btn-secondary"
+        [class.btn-primary]="activeCategory() === category.id"
+        (click)="activeCategory.set(category.id)"
+      >
+        {{ category.label }}
+      </button>
+    </div>
+
+    <div class="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+      <article *ngFor="let product of visibleProducts(); trackBy: trackByProductId" class="card overflow-hidden p-0">
+        <img
+          [src]="product.imageUrl"
+          [alt]="product.name"
+          fallbackImage="/images/default-promo.svg"
+          class="aspect-[4/3] w-full object-cover"
+        />
+
+        <div class="grid gap-2 p-4">
+          <h3 class="display-font text-lg leading-snug">{{ product.name }}</h3>
+          <p class="text-sm leading-relaxed text-[var(--muted)]">{{ product.description }}</p>
+          <div class="flex items-center justify-between gap-2">
+            <small class="text-[var(--muted)]">{{ product.category }}</small>
+            <strong class="text-base text-[var(--text)]">{{ product.price | currency : 'CLP' : 'symbol' : '1.0-0' }}</strong>
+          </div>
+        </div>
+      </article>
+    </div>
+  </section>
 
   <section *ngIf="hasActivePromotions()" aria-label="Promociones activas" class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
     <article
@@ -13,15 +61,15 @@
       class="card overflow-hidden p-0"
     >
       <img
-        [src]="promo.imagen"
-        [alt]="promo.titulo"
+        [src]="promo.image"
+        [alt]="promo.name"
         fallbackImage="/images/default-promo.svg"
         class="aspect-[16/10] w-full object-cover"
       />
 
       <div class="grid gap-2 p-4">
-        <h2 class="display-font text-lg leading-snug">{{ promo.titulo }}</h2>
-        <p class="text-sm leading-relaxed text-[var(--muted)]">{{ promo.descripcion }}</p>
+        <h2 class="display-font text-lg leading-snug">{{ promo.name }}</h2>
+        <p class="text-sm leading-relaxed text-[var(--muted)]">{{ promo.description }}</p>
       </div>
     </article>
   </section>

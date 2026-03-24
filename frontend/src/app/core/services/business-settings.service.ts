@@ -29,12 +29,24 @@ export class BusinessSettingsService {
     }
 
     try {
-      return {
+      return this.normalize({
         ...DEFAULT_BUSINESS_SETTINGS,
         ...(JSON.parse(raw) as Partial<BusinessSettings>),
-      };
+      });
     } catch {
       return DEFAULT_BUSINESS_SETTINGS;
     }
+  }
+
+  private normalize(next: BusinessSettings): BusinessSettings {
+    return {
+      ...next,
+      whatsappNumber:
+        next.whatsappNumber === '56900000000' ? DEFAULT_BUSINESS_SETTINGS.whatsappNumber : next.whatsappNumber,
+      openingHours:
+        next.openingHours === 'Lunes a domingo · 12:30 a 23:00'
+          ? DEFAULT_BUSINESS_SETTINGS.openingHours
+          : next.openingHours,
+    };
   }
 }

@@ -1,11 +1,17 @@
+import { NgIf } from '@angular/common';
 import { Component, computed, inject, signal } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
+import { catchError, map, of } from 'rxjs';
+import { SUSHI_GO_BUSINESS_PROFILE } from '../../core/config/business-profile';
+import { BusinessSettingsService } from '../../core/services/business-settings.service';
+import { PromotionService } from '../../core/services/promotion.service';
 import { CartService } from '../../features/cart/services/cart.service';
 
 @Component({
   selector: 'app-shell',
   standalone: true,
-  imports: [RouterOutlet, RouterLink, RouterLinkActive],
+  imports: [RouterOutlet, RouterLink, RouterLinkActive, NgIf],
   template: `
     <header class="shell-header">
       <a class="brand" routerLink="/catalog">
@@ -15,7 +21,9 @@ import { CartService } from '../../features/cart/services/cart.service';
 
       <nav [class.open]="isMobileMenuOpen()">
         <a routerLink="/catalog" routerLinkActive="active" (click)="closeMobileMenu()">Menú</a>
-        <a routerLink="/promotions" routerLinkActive="active" (click)="closeMobileMenu()">Promos</a>
+        <a *ngIf="hasActivePromotions()" routerLink="/promotions" routerLinkActive="active" (click)="closeMobileMenu()"
+          >Promos</a
+        >
         <a routerLink="/checkout" routerLinkActive="active" (click)="closeMobileMenu()">Pedido</a>
       </nav>
 
@@ -52,7 +60,9 @@ import { CartService } from '../../features/cart/services/cart.service';
 
           <div class="footer-col">
             <h4 class="display-font">Ayuda</h4>
-            <a href="#" rel="nofollow">Contacto</a>
+            <a [href]="mapsLink" target="_blank" rel="noopener noreferrer">{{ businessProfile.address }}</a>
+            <a [href]="whatsappContactLink()" target="_blank" rel="noopener noreferrer">WhatsApp {{ businessProfile.whatsappDisplay }}</a>
+            <a [href]="businessProfile.instagramUrl" target="_blank" rel="noopener noreferrer">Instagram {{ businessProfile.instagramHandle }}</a>
             <a href="#" rel="nofollow">Preguntas frecuentes</a>
             <a href="#" rel="nofollow">Términos y condiciones</a>
             <a href="#" rel="nofollow">Sugerencias y reclamos</a>
@@ -61,17 +71,11 @@ import { CartService } from '../../features/cart/services/cart.service';
           <div class="footer-col">
             <h4 class="display-font">Síguenos</h4>
             <div class="social-row" aria-label="Redes sociales SushiGo">
-              <a href="#" class="social-btn" aria-label="Facebook" rel="nofollow">
-                <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M14.1 8.4h1.7V6h-2c-2 0-3.2 1.2-3.2 3.3v1.4H8.9V13h1.7v5h2.6v-5h2.2l.3-2.3h-2.5V9.5c0-.7.2-1.1.9-1.1Z" fill="currentColor"/></svg>
-              </a>
-              <a href="#" class="social-btn" aria-label="Instagram" rel="nofollow">
+              <a [href]="businessProfile.instagramUrl" class="social-btn" aria-label="Instagram" target="_blank" rel="noopener noreferrer">
                 <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M7.8 3h8.4A4.8 4.8 0 0 1 21 7.8v8.4a4.8 4.8 0 0 1-4.8 4.8H7.8A4.8 4.8 0 0 1 3 16.2V7.8A4.8 4.8 0 0 1 7.8 3Zm8.5 1.7a3.2 3.2 0 0 1 3.2 3.2v8.2a3.2 3.2 0 0 1-3.2 3.2H7.9a3.2 3.2 0 0 1-3.2-3.2V7.9a3.2 3.2 0 0 1 3.2-3.2h8.4Zm-4.2 2.8a4.6 4.6 0 1 0 0 9.2 4.6 4.6 0 0 0 0-9.2Zm0 1.7a2.9 2.9 0 1 1 0 5.8 2.9 2.9 0 0 1 0-5.8Zm4.9-2.2a1.1 1.1 0 1 0 0 2.2 1.1 1.1 0 0 0 0-2.2Z" fill="currentColor"/></svg>
               </a>
-              <a href="#" class="social-btn" aria-label="TikTok" rel="nofollow">
-                <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M14.5 4.2c.6 1.1 1.5 2 2.7 2.4V9a6.1 6.1 0 0 1-2.7-.7v5.2a4.5 4.5 0 1 1-4.4-4.5v2.5a2 2 0 1 0 1.9 2V3h2.5v1.2Z" fill="currentColor"/></svg>
-              </a>
             </div>
-            <small>Atención todos los días de 12:30 a 23:00</small>
+            <small>{{ settings().openingHours }}</small>
           </div>
 
           <div class="footer-col badges-col">
@@ -92,20 +96,20 @@ import { CartService } from '../../features/cart/services/cart.service';
         </div>
 
         <div class="footer-credit">
-          <span>Desarrollado por Juan Meneses</span>
+          <span>{{ businessProfile.name }} · {{ businessProfile.address }}</span>
           <a
-            href="https://www.linkedin.com/in/juan-meneses-mu%C3%B1oz/"
+            [href]="businessProfile.instagramUrl"
             target="_blank"
             rel="noopener noreferrer"
-            aria-label="LinkedIn de Juan Meneses"
+            aria-label="Instagram de Sushi Go"
           >
             <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
               <path
-                d="M6.2 8.3a1.8 1.8 0 1 0 0-3.6 1.8 1.8 0 0 0 0 3.6ZM4.7 9.8h3v9.5h-3V9.8Zm4.9 0h2.9v1.3h.1c.4-.8 1.4-1.6 2.9-1.6 3.1 0 3.6 2 3.6 4.7v5.1h-3v-4.5c0-1.1 0-2.5-1.5-2.5s-1.8 1.2-1.8 2.4v4.6h-3V9.8Z"
+                d="M7.8 3h8.4A4.8 4.8 0 0 1 21 7.8v8.4a4.8 4.8 0 0 1-4.8 4.8H7.8A4.8 4.8 0 0 1 3 16.2V7.8A4.8 4.8 0 0 1 7.8 3Zm8.5 1.7a3.2 3.2 0 0 1 3.2 3.2v8.2a3.2 3.2 0 0 1-3.2 3.2H7.9a3.2 3.2 0 0 1-3.2-3.2V7.9a3.2 3.2 0 0 1 3.2-3.2h8.4Zm-4.2 2.8a4.6 4.6 0 1 0 0 9.2 4.6 4.6 0 0 0 0-9.2Zm0 1.7a2.9 2.9 0 1 1 0 5.8 2.9 2.9 0 0 1 0-5.8Zm4.9-2.2a1.1 1.1 0 1 0 0 2.2 1.1 1.1 0 0 0 0-2.2Z"
                 fill="currentColor"
               />
             </svg>
-            <span>LinkedIn</span>
+            <span>{{ businessProfile.instagramHandle }}</span>
           </a>
         </div>
       </div>
@@ -113,7 +117,7 @@ import { CartService } from '../../features/cart/services/cart.service';
 
     <a
       class="whatsapp-float"
-      href="https://wa.me/56900000000"
+      [href]="whatsappContactLink()"
       target="_blank"
       rel="noopener noreferrer"
       aria-label="Pedir por WhatsApp"
@@ -504,9 +508,26 @@ import { CartService } from '../../features/cart/services/cart.service';
 })
 export class ShellComponent {
   readonly cartService = inject(CartService);
+  private readonly promotionService = inject(PromotionService);
+  private readonly businessSettingsService = inject(BusinessSettingsService);
+  readonly businessProfile = SUSHI_GO_BUSINESS_PROFILE;
+  readonly settings = this.businessSettingsService.settings;
+  readonly mapsLink = `https://maps.google.com/?q=${encodeURIComponent(SUSHI_GO_BUSINESS_PROFILE.address)}`;
   readonly isMobileMenuOpen = signal(false);
   readonly hasItems = computed(() => this.cartService.itemCount() > 0);
+  readonly hasActivePromotions = toSignal(
+    this.promotionService.getPromotions({ per_page: 200 }).pipe(
+      map((response) => response.data.some((promotion) => promotion.is_active && promotion.is_real_promotion)),
+      catchError(() => of(false)),
+    ),
+    { initialValue: false },
+  );
   readonly currentYear = new Date().getFullYear();
+
+  readonly whatsappContactLink = computed(() => {
+    const number = this.settings().whatsappNumber || this.businessProfile.whatsappApiNumber;
+    return `https://wa.me/${number}`;
+  });
 
   toggleMobileMenu(): void {
     this.isMobileMenuOpen.update((value) => !value);

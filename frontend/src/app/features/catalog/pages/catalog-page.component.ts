@@ -1,6 +1,15 @@
 import { CurrencyPipe, TitleCasePipe } from '@angular/common';
 import { Component, computed, inject, signal } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { RouterLink } from '@angular/router';
+import { interval, map, startWith } from 'rxjs';
+import { SUSHI_GO_BUSINESS_PROFILE } from '../../../core/config/business-profile';
+import {
+  OFFICIAL_MENU_CATEGORIES,
+  OFFICIAL_MENU_HIGHLIGHTS,
+} from '../../../core/data/official-menu.data';
+import { StoreHoursService } from '../../../core/services/store-hours.service';
+import { ImageFallbackDirective } from '../../../shared/directives/image-fallback.directive';
 import { Product } from '../../../shared/models/catalog.model';
 import { CatalogService } from '../services/catalog.service';
 import { CartService } from '../../cart/services/cart.service';
@@ -8,74 +17,77 @@ import { CartService } from '../../cart/services/cart.service';
 @Component({
   selector: 'app-catalog-page',
   standalone: true,
-  imports: [CurrencyPipe, TitleCasePipe, RouterLink],
+  imports: [CurrencyPipe, TitleCasePipe, RouterLink, ImageFallbackDirective],
   template: `
     <section class="hero-section card">
       <div class="hero-content">
-        <div class="eyebrow">Abierto ahora · Arica</div>
+        <div class="eyebrow">{{ storeStatus().statusLabel }} · {{ businessProfile.city }}</div>
         <h1 class="display-font">Sushi fresco, sin vueltas. <span>Listo para pedir hoy.</span></h1>
         <p>
-          Cocina activa todo el día, rolls preparados al momento y entrega confiable en tu zona. Haz tu pedido en
-          menos de un minuto.
+          {{ businessProfile.name }} en {{ businessProfile.address }}. Revisa la carta oficial, confirma horario
+          actualizado y pide por WhatsApp en minutos.
         </p>
 
         <div class="trust-row">
-          <span>⭐ 4.9 en reseñas locales</span>
-          <span>🕒 20–35 min promedio</span>
-          <span>✅ Confirmación inmediata</span>
+          <span>🕒 {{ storeStatus().todayHours }}</span>
+          <span>📍 {{ businessProfile.address }}</span>
+          <span>📲 Instagram {{ businessProfile.instagramHandle }}</span>
         </div>
 
         <div class="hero-actions">
           <button class="btn-primary" type="button" (click)="scrollToMenu()">Pedir en 1 minuto</button>
-          <a class="btn-secondary" routerLink="/cart">Ver mi pedido</a>
+          <a class="btn-secondary" [href]="businessProfile.menuUrl" target="_blank" rel="noopener noreferrer">Ver carta</a>
         </div>
 
-        <p class="urgency-note">Alta demanda 20:00–22:00 · reserva tu horario y evita esperas</p>
+        <p class="urgency-note">{{ storeStatus().statusDetail }} · Pedidos directos al WhatsApp {{ businessProfile.whatsappDisplay }}</p>
       </div>
 
       <img
         src="https://images.unsplash.com/photo-1579871494447-9811cf80d66c?w=1200&q=80&fit=crop"
         alt="Equipo de cocina preparando sushi"
+        appImageFallback
       />
     </section>
 
     <section class="promo-strip" aria-label="Promociones activas">
-      <span>🍣 Rolls frescos diarios</span>
+      <span>🍣 Rolls tradicionales desde $5.000</span>
+      <span>⭐ Especiales a $6.490</span>
       <span>🛵 Delivery en Arica</span>
-      <span>🔥 Combo 2x1 martes</span>
-      <span>💬 Confirmación por WhatsApp</span>
+      <span>💬 Pedidos por WhatsApp</span>
     </section>
 
-    <section class="featured-promos">
-      <div class="menu-header">
-        <div>
-          <div class="eyebrow">Promociones</div>
-          <h2 class="display-font">Ofertas de hoy</h2>
+    @if (promoProducts().length > 0) {
+      <section class="featured-promos">
+        <div class="menu-header">
+          <div>
+            <div class="eyebrow">Promociones</div>
+            <h2 class="display-font">Ofertas de hoy</h2>
+          </div>
         </div>
-      </div>
 
-      <div class="promo-grid">
-        @for (promo of promoProducts(); track promo.id) {
-          <article class="card promo-card">
-            <img [src]="promo.imageUrl" [alt]="promo.name" />
-            <div class="promo-content">
-              <span class="promo-tag">Promo activa</span>
-              <h3 class="display-font">{{ promo.name }}</h3>
-              <p>{{ promo.description }}</p>
-              <div class="promo-actions">
-                <div class="promo-prices">
-                  @if (promo.originalPrice) {
-                    <span class="promo-old">{{ promo.originalPrice | currency : 'CLP' : 'symbol' : '1.0-0' }}</span>
-                  }
-                  <strong>{{ promo.price | currency : 'CLP' : 'symbol' : '1.0-0' }}</strong>
+        <div class="promo-grid">
+          @for (promo of promoProducts(); track promo.id) {
+            <article class="card promo-card">
+              <img [src]="promo.imageUrl" [alt]="promo.name" appImageFallback />
+              <div class="promo-content">
+                <span class="promo-tag">Promo activa</span>
+                <h3 class="display-font">{{ promo.name }}</h3>
+                <p>{{ promo.description }}</p>
+                <div class="promo-actions">
+                  <div class="promo-prices">
+                    @if (promo.originalPrice) {
+                      <span class="promo-old">{{ promo.originalPrice | currency : 'CLP' : 'symbol' : '1.0-0' }}</span>
+                    }
+                    <strong>{{ promo.price | currency : 'CLP' : 'symbol' : '1.0-0' }}</strong>
+                  </div>
+                  <button class="btn-primary" type="button" (click)="add(promo)">Agregar al pedido</button>
                 </div>
-                <button class="btn-primary" type="button" (click)="add(promo)">Agregar al pedido</button>
               </div>
-            </div>
-          </article>
-        }
-      </div>
-    </section>
+            </article>
+          }
+        </div>
+      </section>
+    }
 
     <section class="category-section">
       <div class="menu-header">
@@ -103,7 +115,10 @@ import { CartService } from '../../cart/services/cart.service';
           <div class="eyebrow">Menú</div>
           <h2 class="display-font">Nuestros rolls</h2>
         </div>
-        <small>Precios en pesos chilenos</small>
+        <small>
+          Precios en pesos chilenos ·
+          <a [href]="businessProfile.menuUrl" target="_blank" rel="noopener noreferrer">Ver carta oficial</a>
+        </small>
       </div>
 
       @if (flashMessage()) {
@@ -127,7 +142,7 @@ import { CartService } from '../../cart/services/cart.service';
         @for (product of filteredProducts(); track product.id) {
           <article class="product-card">
             <div class="img-wrap">
-              <img [src]="product.imageUrl" [alt]="product.name" />
+              <img [src]="product.imageUrl" [alt]="product.name" appImageFallback />
               @if (product.badge) {
                 <span class="badge" [class]="'badge ' + product.badge">{{ badgeLabel(product.badge) }}</span>
               }
@@ -328,6 +343,16 @@ import { CartService } from '../../cart/services/cart.service';
       .menu-header small {
         color: var(--muted);
         font-size: 0.76rem;
+      }
+
+      .menu-header small a {
+        color: #e7ddd5;
+        text-decoration: underline;
+        text-underline-offset: 2px;
+      }
+
+      .menu-header small a:hover {
+        color: #ffd5c0;
       }
 
       .promo-grid {
@@ -786,41 +811,25 @@ import { CartService } from '../../cart/services/cart.service';
 })
 export class CatalogPageComponent {
   private readonly catalogService = inject(CatalogService);
+  private readonly storeHoursService = inject(StoreHoursService);
   readonly cartService = inject(CartService);
+  readonly businessProfile = SUSHI_GO_BUSINESS_PROFILE;
+
+  private readonly currentTime = toSignal(
+    interval(60000).pipe(
+      startWith(0),
+      map(() => new Date()),
+    ),
+    { initialValue: new Date() },
+  );
+
+  readonly storeStatus = computed(() => this.storeHoursService.getCurrentStatus(this.currentTime()));
 
   readonly flashMessage = signal('');
   readonly activeCategory = signal('todos');
-  readonly categories = [
-    { id: 'todos', label: 'Todos' },
-    { id: 'rolls', label: 'Rolls clásicos' },
-    { id: 'spicy', label: 'Spicy' },
-    { id: 'veggie', label: 'Veggie' },
-    { id: 'nigiri', label: 'Nigiri' },
-    { id: 'combo', label: 'Combos' },
-  ];
+  readonly categories = OFFICIAL_MENU_CATEGORIES;
 
-  readonly categoryHighlights = [
-    {
-      id: 'rolls',
-      label: 'Rolls clásicos',
-      imageUrl: 'https://images.unsplash.com/photo-1611143669185-af224c5e3252?w=900&q=80&fit=crop',
-    },
-    {
-      id: 'spicy',
-      label: 'Spicy',
-      imageUrl: 'https://images.unsplash.com/photo-1617196034183-421b4040ed20?w=900&q=80&fit=crop',
-    },
-    {
-      id: 'veggie',
-      label: 'Veggie',
-      imageUrl: 'https://images.unsplash.com/photo-1553621042-f6e147245754?w=900&q=80&fit=crop',
-    },
-    {
-      id: 'combo',
-      label: 'Combos',
-      imageUrl: 'https://images.unsplash.com/photo-1519984388953-d2406bc725e1?w=900&q=80&fit=crop',
-    },
-  ];
+  readonly categoryHighlights = OFFICIAL_MENU_HIGHLIGHTS;
 
   readonly buildSteps = [
     {
