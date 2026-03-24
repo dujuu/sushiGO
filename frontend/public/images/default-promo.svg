@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 675" role="img" aria-labelledby="title desc">
+  <title id="title">Imagen de promoción no disponible</title>
+  <desc id="desc">Imagen por defecto para promociones cuando falla la imagen principal.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#101013" />
+      <stop offset="100%" stop-color="#1e1e23" />
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="675" fill="url(#bg)" />
+  <g fill="none" stroke="#ff5a14" stroke-width="6" opacity="0.5">
+    <circle cx="340" cy="195" r="70" />
+    <circle cx="870" cy="470" r="90" />
+  </g>
+  <g fill="#f5f3ef" font-family="Arial, sans-serif" text-anchor="middle">
+    <text x="600" y="330" font-size="56" font-weight="700">Promoción SushiGO</text>
+    <text x="600" y="390" font-size="32" opacity="0.75">Imagen no disponible</text>
+  </g>
+</svg>

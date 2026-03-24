@@ -25,7 +25,14 @@ export const routes: Routes = [
 			{
 				path: '',
 				pathMatch: 'full',
-				redirectTo: 'catalog',
+				redirectTo: 'home',
+			},
+			{
+				path: 'home',
+				loadComponent: () =>
+					import('./features/home/pages/home.component').then(
+						(m) => m.HomeComponent,
+					),
 			},
 			{
 				path: 'catalog',
@@ -73,6 +80,6 @@ export const routes: Routes = [
 	},
 	{
 		path: '**',
-		redirectTo: 'catalog',
+		redirectTo: 'home',
 	},
 ];

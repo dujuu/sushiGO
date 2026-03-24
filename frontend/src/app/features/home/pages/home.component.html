@@ -1,0 +1,28 @@
+<section class="grid gap-4 md:gap-5">
+  <header class="rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-5 md:p-6">
+    <span class="eyebrow">Sushi Premium</span>
+    <h1 class="display-font mt-2 text-3xl leading-tight md:text-4xl">Promociones de temporada</h1>
+    <p class="mt-2 max-w-2xl text-sm text-[var(--muted)] md:text-base">
+      Selección activa del día, pensada para una experiencia japonesa moderna y equilibrada.
+    </p>
+  </header>
+
+  <section *ngIf="hasActivePromotions()" aria-label="Promociones activas" class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+    <article
+      *ngFor="let promo of activePromotions(); trackBy: trackByPromotionId"
+      class="card overflow-hidden p-0"
+    >
+      <img
+        [src]="promo.imagen"
+        [alt]="promo.titulo"
+        fallbackImage="/images/default-promo.svg"
+        class="aspect-[16/10] w-full object-cover"
+      />
+
+      <div class="grid gap-2 p-4">
+        <h2 class="display-font text-lg leading-snug">{{ promo.titulo }}</h2>
+        <p class="text-sm leading-relaxed text-[var(--muted)]">{{ promo.descripcion }}</p>
+      </div>
+    </article>
+  </section>
+</section>
