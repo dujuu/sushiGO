@@ -1,0 +1,19 @@
+      .stat-card {
+        display: grid;
+        gap: 0.2rem;
+      }
+
+      small {
+        color: var(--muted);
+        font-size: 0.75rem;
+      }
+
+      strong {
+        font-size: 1.45rem;
+      }
+
+      p {
+        color: #c9c0b9;
+        font-size: 0.78rem;
+        margin: 0;
+      }

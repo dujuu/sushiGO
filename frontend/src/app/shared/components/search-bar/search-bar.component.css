@@ -1,0 +1,14 @@
+      .search {
+        display: inline-flex;
+        min-width: 260px;
+      }
+
+      input {
+        background: var(--surface-2);
+        border: 1px solid var(--border-2);
+        border-radius: 10px;
+        color: var(--white);
+        font-size: 0.82rem;
+        padding: 0.58rem 0.75rem;
+        width: 100%;
+      }

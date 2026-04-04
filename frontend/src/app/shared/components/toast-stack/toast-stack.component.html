@@ -1,0 +1,8 @@
+<div class="stack">
+  @for (toast of notificationService.toasts(); track toast.id) {
+    <article class="toast" [class]="toast.type">
+      <span>{{ toast.text }}</span>
+      <button type="button" (click)="notificationService.remove(toast.id)">×</button>
+    </article>
+  }
+</div>

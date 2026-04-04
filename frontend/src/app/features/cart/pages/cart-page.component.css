@@ -1,0 +1,108 @@
+      .layout-grid {
+        display: grid;
+        gap: 1rem;
+        grid-template-columns: 1fr;
+      }
+
+      .progress-card {
+        display: grid;
+        gap: 0.6rem;
+        margin-bottom: 0.9rem;
+      }
+
+      .progress-card p {
+        color: #ebdfd4;
+        font-size: 0.86rem;
+      }
+
+      .progress-track {
+        background: var(--surface-2);
+        border: 1px solid var(--border);
+        border-radius: 999px;
+        height: 10px;
+        overflow: hidden;
+      }
+
+      .progress-value {
+        background: linear-gradient(90deg, #ff6a29, var(--orange));
+        height: 100%;
+        transition: width 0.3s ease;
+      }
+
+      .grid {
+        display: grid;
+        gap: 1rem;
+      }
+
+      .subtotal {
+        color: #ebedf2;
+        font-weight: 600;
+      }
+
+      .unit-price {
+        color: var(--muted);
+        font-size: 0.8rem;
+        margin-top: -0.1rem;
+      }
+
+      .qty-actions {
+        align-items: center;
+        display: flex;
+        gap: 0.5rem;
+      }
+
+      .qty-btn {
+        background: #252b38;
+        border: 1px solid #364056;
+        border-radius: 8px;
+        color: var(--text);
+        cursor: pointer;
+        font-size: 1rem;
+        font-weight: 700;
+        height: 34px;
+        width: 34px;
+      }
+
+      .qty {
+        min-width: 1.5rem;
+        text-align: center;
+      }
+
+      .delete {
+        margin-left: auto;
+      }
+
+      .summary {
+        align-content: start;
+        display: grid;
+        gap: 0.75rem;
+        height: fit-content;
+        position: static;
+      }
+
+      .summary-note {
+        color: var(--muted);
+        font-size: 0.76rem;
+      }
+
+      .empty-state {
+        display: grid;
+        gap: 0.7rem;
+        justify-items: start;
+        max-width: 360px;
+      }
+
+      .empty-state small {
+        color: var(--muted);
+      }
+
+      @media (min-width: 1024px) {
+        .layout-grid {
+          grid-template-columns: minmax(0, 1fr) 280px;
+        }
+
+        .summary {
+          position: sticky;
+          top: 5.8rem;
+        }
+      }

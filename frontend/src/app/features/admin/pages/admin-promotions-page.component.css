@@ -1,0 +1,74 @@
+      .toolbar {
+        align-items: stretch;
+        display: flex;
+        flex-direction: column;
+        gap: 0.7rem;
+        margin-bottom: 0.8rem;
+      }
+
+      .toolbar label {
+        align-items: center;
+        color: #d8d0c9;
+        display: flex;
+        font-size: 0.8rem;
+        gap: 0.4rem;
+      }
+
+      .grid {
+        display: grid;
+        gap: 0.7rem;
+        grid-template-columns: 1fr;
+      }
+
+      .promo-card {
+        display: grid;
+        gap: 0.45rem;
+      }
+
+      .head {
+        align-items: center;
+        display: flex;
+        justify-content: space-between;
+      }
+
+      h3,
+      p,
+      small {
+        margin: 0;
+      }
+
+      p,
+      small {
+        color: var(--muted);
+        font-size: 0.83rem;
+      }
+
+      .actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.4rem;
+      }
+
+      .price-row {
+        align-items: baseline;
+        display: flex;
+        gap: 0.4rem;
+      }
+
+      .old-price {
+        color: #b3a9a0;
+        font-size: 0.84rem;
+        text-decoration: line-through;
+      }
+
+      @media (min-width: 768px) {
+        .grid {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+
+        .toolbar {
+          align-items: center;
+          flex-direction: row;
+          justify-content: space-between;
+        }
+      }

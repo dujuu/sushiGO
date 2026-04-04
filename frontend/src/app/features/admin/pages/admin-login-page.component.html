@@ -1,0 +1,21 @@
+<section class="login-page">
+  <form class="card login-card" [formGroup]="form" (ngSubmit)="submit()">
+    <div>
+      <p class="eyebrow">SushiGo</p>
+      <h1 class="display-font">Acceso administrativo</h1>
+      <p class="subtitle">Ingresa con una cuenta autorizada para gestionar el panel.</p>
+    </div>
+
+    <label>Email</label>
+    <input type="email" formControlName="email" autocomplete="email" />
+
+    <label>Contraseña</label>
+    <input type="password" formControlName="password" autocomplete="current-password" />
+
+    <button class="btn-primary" type="submit" [disabled]="saving() || form.invalid">
+      {{ saving() ? 'Ingresando...' : 'Ingresar al panel' }}
+    </button>
+
+    <a routerLink="/catalog">Volver al sitio público</a>
+  </form>
+</section>

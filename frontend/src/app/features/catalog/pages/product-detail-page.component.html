@@ -1,0 +1,10 @@
+@if (product$ | async; as product) {
+  <article class="card">
+    <img [src]="product.imageUrl" [alt]="product.name" appImageFallback />
+    <h1>{{ product.name }}</h1>
+    <p>{{ product.description }}</p>
+    <p><strong>Ingredientes:</strong> {{ product.ingredients.join(', ') }}</p>
+    <p><strong>{{ product.price | currency : 'CLP' : 'symbol' : '1.0-0' }}</strong></p>
+    <button class="btn-primary" (click)="add(product)">Agregar al carrito</button>
+  </article>
+}

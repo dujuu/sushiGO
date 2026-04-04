@@ -1,0 +1,39 @@
+      .toolbar {
+        align-items: stretch;
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+        margin-bottom: 0.8rem;
+      }
+
+      .table {
+        display: grid;
+        gap: 0.45rem;
+      }
+
+      .row {
+        align-items: start;
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        display: grid;
+        gap: 0.8rem;
+        grid-template-columns: 1fr;
+        padding: 0.55rem;
+      }
+
+      p {
+        color: var(--muted);
+        margin: 0;
+      }
+
+      @media (min-width: 768px) {
+        .toolbar {
+          align-items: center;
+          flex-direction: row;
+        }
+
+        .row {
+          align-items: center;
+          grid-template-columns: 1.2fr 1fr auto auto;
+        }
+      }

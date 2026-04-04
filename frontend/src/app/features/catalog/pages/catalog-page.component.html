@@ -1,0 +1,239 @@
+<section class="hero-section card">
+  <div class="hero-content">
+    <div class="eyebrow">{{ storeStatus().statusLabel }} · {{ businessProfile.city }}</div>
+    <h1 class="display-font">Sushi fresco, sin vueltas. <span>Listo para pedir hoy.</span></h1>
+    <p>
+      {{ businessProfile.name }} en {{ businessProfile.address }}. Revisa la carta oficial, confirma horario
+      actualizado y pide por WhatsApp en minutos.
+    </p>
+
+    <div class="trust-row">
+      <span>🕒 {{ storeStatus().todayHours }}</span>
+      <span>📍 {{ businessProfile.address }}</span>
+      <span>📲 Instagram {{ businessProfile.instagramHandle }}</span>
+      <span>🚚 Entrega estimada {{ deliveryEta }}</span>
+    </div>
+
+    <div class="hero-actions">
+      <button class="btn-primary" type="button" (click)="scrollToMenu()">Pedir en 1 minuto</button>
+      <button class="btn-secondary" type="button" (click)="scrollToMenu()">Ver carta</button>
+      <a class="btn-secondary catalog-cta" routerLink="/catalog">Ver catálogo completo</a>
+    </div>
+
+    <p class="urgency-note">{{ storeStatus().statusDetail }} · Pedidos directos al WhatsApp {{ businessProfile.whatsappDisplay }}</p>
+  </div>
+
+  <img
+    src="https://images.unsplash.com/photo-1579871494447-9811cf80d66c?w=1200&q=80&fit=crop"
+    alt="Equipo de cocina preparando sushi"
+    appImageFallback
+  />
+</section>
+
+<section class="promo-strip" aria-label="Promociones activas">
+  <span>🍣 Rolls tradicionales desde $5.000</span>
+  <span>⭐ Especiales a $6.490</span>
+  <span>🛵 Delivery en Arica</span>
+  <span>💬 Pedidos por WhatsApp</span>
+</section>
+
+@if (promoProducts().length > 0) {
+  <section class="featured-promos">
+    <div class="menu-header">
+      <div>
+        <div class="eyebrow">Promociones</div>
+        <h2 class="display-font">Ofertas de hoy</h2>
+      </div>
+    </div>
+
+    <div class="promo-grid">
+      @for (promo of promoProducts(); track promo.id) {
+        <article class="card promo-card">
+          <img [src]="promo.imageUrl" [alt]="promo.name" appImageFallback />
+          <div class="promo-content">
+            <span class="promo-tag">Promo activa</span>
+            <h3 class="display-font">{{ promo.name }}</h3>
+            <p>{{ promo.description }}</p>
+            <div class="promo-actions">
+              <div class="promo-prices">
+                @if (promo.originalPrice) {
+                  <span class="promo-old">{{ promo.originalPrice | currency : 'CLP' : 'symbol' : '1.0-0' }}</span>
+                }
+                <strong>{{ promo.price | currency : 'CLP' : 'symbol' : '1.0-0' }}</strong>
+              </div>
+              <button class="btn-primary" type="button" (click)="add(promo)">Agregar al pedido</button>
+            </div>
+          </div>
+        </article>
+      }
+    </div>
+  </section>
+}
+
+<section class="category-section">
+  <div class="menu-header">
+    <div>
+      <div class="eyebrow">Categorías</div>
+      <h2 class="display-font">¿Qué quieres comer hoy?</h2>
+    </div>
+    <small>Navegación rápida al menú</small>
+  </div>
+
+  <div class="category-grid">
+    @for (category of categoryHighlights; track category.id) {
+      <button class="category-card" type="button" (click)="setCategoryAndScroll(category.id)">
+        <img [src]="category.imageUrl" [alt]="category.label" />
+        <span class="overlay"></span>
+        <span class="category-label display-font">{{ category.label }}</span>
+      </button>
+    }
+  </div>
+</section>
+
+@if (bestSellerProducts().length > 0) {
+  <section class="bestsellers-section">
+    <div class="menu-header">
+      <div>
+        <div class="eyebrow">Más vendidos</div>
+        <h2 class="display-font">Favoritos del local</h2>
+      </div>
+      <small>Pedidos rápidos de nuestros clientes</small>
+    </div>
+
+    <div class="bestseller-grid">
+      @for (item of bestSellerProducts(); track item.id) {
+        <article class="card bestseller-card" [class.just-added]="recentlyAddedProductId() === item.id">
+          <img [src]="item.imageUrl" [alt]="item.name" appImageFallback />
+          <div>
+            <h3 class="display-font">{{ item.name }}</h3>
+            <p>{{ item.price | currency : 'CLP' : 'symbol' : '1.0-0' }}</p>
+          </div>
+          <button class="btn-secondary" type="button" (click)="add(item)">+ Agregar</button>
+        </article>
+      }
+    </div>
+  </section>
+}
+
+<section class="menu-section" id="menu-section">
+  <div class="menu-header">
+    <div>
+      <div class="eyebrow">Menú</div>
+      <h2 class="display-font">Nuestros rolls</h2>
+    </div>
+    <small>
+      Precios en pesos chilenos ·
+      <a [href]="businessProfile.menuUrl" target="_blank" rel="noopener noreferrer">Ver carta oficial</a>
+    </small>
+  </div>
+
+  @if (flashMessage()) {
+    <p class="flash">{{ flashMessage() }}</p>
+  }
+
+  <div class="cat-tabs">
+    @for (tab of categories; track tab.id) {
+      <button
+        type="button"
+        class="cat-tab"
+        [class.active]="activeCategory() === tab.id"
+        (click)="activeCategory.set(tab.id)"
+      >
+        <span>{{ tab.label }}</span>
+      </button>
+    }
+  </div>
+
+  <div class="grid">
+    @for (product of filteredProducts(); track product.id) {
+      <article class="product-card" [class.just-added]="recentlyAddedProductId() === product.id">
+        <div class="img-wrap">
+          <img [src]="product.imageUrl" [alt]="product.name" appImageFallback />
+          @if (product.badge) {
+            <span class="badge" [class]="'badge ' + product.badge">{{ badgeLabel(product.badge) }}</span>
+          }
+        </div>
+
+        <div class="card-body">
+          <h3 class="display-font">{{ product.name }}</h3>
+          <div class="meta-row">
+            <span>8 piezas</span>
+            <span>{{ product.category | titlecase }}</span>
+          </div>
+          <p>{{ product.description }}</p>
+
+          <div class="card-footer">
+            <strong>{{ product.price | currency : 'CLP' : 'symbol' : '1.0-0' }}</strong>
+            <div class="quick-order">
+              <button class="qty-btn" type="button" (click)="quickDecrease(product)" aria-label="Quitar uno">−</button>
+              <span>{{ productQuantity(product.id) }}</span>
+              <button class="qty-btn" type="button" (click)="add(product)" aria-label="Agregar uno">+</button>
+            </div>
+            <div class="card-actions">
+              <button class="btn-primary" type="button" (click)="add(product)">Agregar</button>
+              <a class="btn-secondary" [routerLink]="['/catalog', product.id]">Detalle</a>
+            </div>
+          </div>
+        </div>
+      </article>
+    }
+  </div>
+</section>
+
+<section class="upsell-section card">
+  <div>
+    <div class="eyebrow">Sugerencia</div>
+    <h3 class="display-font">Agrega bebida por {{ upsellSuggestion.price | currency : 'CLP' : 'symbol' : '1.0-0' }}</h3>
+    <p>Completa tu combo con una opción fría para tu pedido.</p>
+  </div>
+  <button class="btn-primary" type="button" (click)="add(upsellSuggestion)">Agregar sugerencia</button>
+</section>
+
+<section class="build-section card">
+  <div class="menu-header build-header">
+    <div>
+      <div class="eyebrow">Arma a tu gusto</div>
+      <h2 class="display-font">Tu roll, en 3 pasos</h2>
+    </div>
+    <small>Simple y rápido para cerrar pedido</small>
+  </div>
+
+  <div class="build-steps">
+    @for (step of buildSteps; track step.id) {
+      <button
+        type="button"
+        class="build-step"
+        [class.active]="activeBuildStep() === step.id"
+        (click)="activeBuildStep.set(step.id)"
+      >
+        <span class="step-n">{{ step.id }}</span>
+        <span>
+          <strong>{{ step.title }}</strong>
+          <small>{{ step.hint }}</small>
+        </span>
+      </button>
+    }
+  </div>
+
+  <article class="build-panel">
+    <h3 class="display-font">Paso {{ activeStepData().id }} · {{ activeStepData().title }}</h3>
+    <p>{{ activeStepData().description }}</p>
+    <div class="build-actions">
+      <button class="btn-secondary" type="button" (click)="scrollToMenu()">Ver ingredientes</button>
+      <a class="btn-primary" routerLink="/checkout">Continuar al pedido</a>
+    </div>
+  </article>
+</section>
+
+@if (cartService.itemCount() > 0) {
+  <a class="mobile-cart-cta" routerLink="/cart">
+    <span>{{ cartService.itemCount() }} productos</span>
+    <strong>{{ cartService.total() | currency : 'CLP' : 'symbol' : '1.0-0' }}</strong>
+    <span>Ver pedido →</span>
+  </a>
+
+  <a class="desktop-cart-float" routerLink="/cart">
+    <span>{{ cartService.itemCount() }}</span>
+    <strong>Mi carrito</strong>
+  </a>
+}

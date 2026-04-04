@@ -1,0 +1,37 @@
+<div class="admin-shell">
+  <aside class="card sidebar">
+    <div class="sidebar-top">
+      <h2 class="display-font">SushiGo Admin</h2>
+      <button class="menu-toggle" type="button" (click)="toggleNav()" aria-label="Abrir menú admin">
+        ☰
+      </button>
+    </div>
+
+    @if (authService.user(); as user) {
+      <section class="admin-profile">
+        <span class="avatar" aria-hidden="true">{{ getInitials(user.name) }}</span>
+        <div>
+          <strong>{{ user.name }}</strong>
+          <small>{{ user.email }}</small>
+        </div>
+      </section>
+    }
+
+    <nav [class.open]="isNavOpen()">
+      <a routerLink="/admin/dashboard" routerLinkActive="active">Dashboard</a>
+      <a routerLink="/admin/products" routerLinkActive="active">Productos</a>
+      <a routerLink="/admin/promotions" routerLinkActive="active">Promociones</a>
+      <a routerLink="/admin/orders" routerLinkActive="active">Historial</a>
+      <a routerLink="/admin/settings" routerLinkActive="active">Configuración</a>
+      <a routerLink="/catalog">Volver al sitio</a>
+      <button type="button" class="logout-btn" (click)="logout()">Cerrar sesión</button>
+    </nav>
+  </aside>
+
+  <main>
+    <router-outlet />
+  </main>
+
+  <app-loading-overlay [visible]="loadingService.isLoading()" message="Procesando..." />
+  <app-toast-stack />
+</div>

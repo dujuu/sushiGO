@@ -1,0 +1,11 @@
+<article class="stat-card card">
+  <small>{{ label() }}</small>
+  @if (currency()) {
+    <strong>{{ value() | currency : 'CLP' : 'symbol' : '1.0-0' }}</strong>
+  } @else {
+    <strong>{{ value() }}</strong>
+  }
+  @if (hint()) {
+    <p>{{ hint() }}</p>
+  }
+</article>

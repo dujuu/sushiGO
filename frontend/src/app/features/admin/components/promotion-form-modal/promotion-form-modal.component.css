@@ -1,0 +1,59 @@
+      .backdrop {
+        align-items: center;
+        background: rgba(0, 0, 0, 0.55);
+        display: flex;
+        inset: 0;
+        justify-content: center;
+        padding: 1rem;
+        position: fixed;
+        z-index: 120;
+      }
+
+      .modal {
+        display: grid;
+        gap: 0.45rem;
+        max-height: calc(100vh - 2rem);
+        overflow: auto;
+        width: min(100%, 680px);
+      }
+
+      .grid-two {
+        display: grid;
+        gap: 0.5rem;
+        grid-template-columns: 1fr;
+      }
+
+      @media (min-width: 768px) {
+        .grid-two {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+      }
+
+      label {
+        color: #d8d0c9;
+        font-size: 0.78rem;
+        font-weight: 700;
+      }
+
+      input,
+      select,
+      textarea {
+        background: var(--surface-2);
+        border: 1px solid var(--border-2);
+        border-radius: 10px;
+        color: var(--white);
+        padding: 0.55rem 0.65rem;
+        width: 100%;
+      }
+
+      .check-row {
+        align-items: center;
+        display: flex;
+        gap: 0.4rem;
+      }
+
+      .actions {
+        display: flex;
+        gap: 0.5rem;
+        justify-content: end;
+      }

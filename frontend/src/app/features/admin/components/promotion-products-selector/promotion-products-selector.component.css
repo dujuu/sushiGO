@@ -1,0 +1,80 @@
+      .selector {
+        display: grid;
+        gap: 0.5rem;
+      }
+
+      h4 {
+        margin: 0;
+      }
+
+      .search-row input {
+        background: var(--surface-2);
+        border: 1px solid var(--border-2);
+        border-radius: 10px;
+        color: var(--white);
+        padding: 0.48rem 0.6rem;
+        width: 100%;
+      }
+
+      .catalog {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.4rem;
+      }
+
+      .catalog button {
+        background: rgba(255, 255, 255, 0.04);
+        border: 1px solid var(--border-2);
+        border-radius: 999px;
+        color: #ddd4cd;
+        cursor: pointer;
+        font-size: 0.73rem;
+        padding: 0.32rem 0.6rem;
+      }
+
+      .selected {
+        display: grid;
+        gap: 0.45rem;
+      }
+
+      .selected p {
+        color: var(--muted);
+        font-size: 0.78rem;
+      }
+
+      article {
+        align-items: center;
+        background: var(--surface-2);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        display: grid;
+        gap: 0.5rem;
+        grid-template-columns: 1fr auto auto;
+        padding: 0.5rem;
+      }
+
+      label {
+        color: #d8d0c9;
+        display: grid;
+        font-size: 0.72rem;
+      }
+
+      input {
+        background: var(--surface-3);
+        border: 1px solid var(--border-2);
+        border-radius: 8px;
+        color: var(--white);
+        margin-top: 0.2rem;
+        max-width: 76px;
+        padding: 0.28rem 0.35rem;
+      }
+
+      .remove {
+        background: transparent;
+        border: 1px solid #7e4048;
+        border-radius: 8px;
+        color: #f1aab5;
+        cursor: pointer;
+        font-size: 0.72rem;
+        padding: 0.35rem 0.45rem;
+      }

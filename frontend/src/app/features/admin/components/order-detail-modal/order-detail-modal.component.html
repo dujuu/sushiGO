@@ -1,0 +1,39 @@
+@if (open() && order()) {
+  <div class="backdrop" (click)="close.emit()">
+    <section class="card modal" (click)="$event.stopPropagation()">
+      <header>
+        <div>
+          <h3 class="display-font">Pedido {{ order()!.order_number }}</h3>
+          <p>{{ order()!.created_at | date: 'dd/MM/yyyy HH:mm' }}</p>
+        </div>
+        <app-status-badge [label]="order()!.status" />
+      </header>
+
+      <div class="meta">
+        <p><strong>Cliente:</strong> {{ order()!.user?.name || 'Invitado' }}</p>
+        <p><strong>Email:</strong> {{ order()!.user?.email || 'No registrado' }}</p>
+        <p><strong>Notas:</strong> {{ order()!.notes || 'Sin notas' }}</p>
+      </div>
+
+      <div class="items">
+        @for (item of order()!.items; track item.id) {
+          <article>
+            <span>{{ item.product_name }} x{{ item.quantity }}</span>
+            <strong>{{ item.subtotal | currency: 'PEN' : 'symbol-narrow' }}</strong>
+          </article>
+        }
+      </div>
+
+      <footer>
+        <div>
+          <p>Subtotal: {{ order()!.subtotal | currency: 'PEN' : 'symbol-narrow' }}</p>
+          <p>Descuento: {{ order()!.discount | currency: 'PEN' : 'symbol-narrow' }}</p>
+          <p class="total">Total: {{ order()!.total | currency: 'PEN' : 'symbol-narrow' }}</p>
+        </div>
+        <div class="actions">
+          <button class="btn-secondary" type="button" (click)="close.emit()">Cerrar</button>
+        </div>
+      </footer>
+    </section>
+  </div>
+}

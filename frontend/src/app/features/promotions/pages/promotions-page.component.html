@@ -1,0 +1,24 @@
+<h1>Promociones</h1>
+@if (promotions$ | async; as promotions) {
+  @if (promotions.length > 0) {
+    <div class="grid">
+      @for (product of promotions; track product.id) {
+        <article class="card">
+          <img [src]="product.imageUrl" [alt]="product.name" appImageFallback />
+          <h2>{{ product.name }}</h2>
+          <p>{{ product.description }}</p>
+          <div class="prices">
+            @if (product.originalPrice) {
+              <small>{{ product.originalPrice | currency : 'CLP' : 'symbol' : '1.0-0' }}</small>
+            }
+            <strong>{{ product.price | currency : 'CLP' : 'symbol' : '1.0-0' }}</strong>
+          </div>
+        </article>
+      }
+    </div>
+  } @else {
+    <article class="card">
+      <p>No hay promociones activas por ahora.</p>
+    </article>
+  }
+}

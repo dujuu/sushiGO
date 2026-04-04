@@ -1,0 +1,60 @@
+<app-page-header title="Gestión de promociones" subtitle="Administra combos y ofertas activas.">
+  <button class="btn-primary" type="button" (click)="openCreate()">Nueva promoción</button>
+</app-page-header>
+
+<section class="toolbar card">
+  <app-search-bar [value]="search()" placeholder="Buscar por nombre" (valueChange)="search.set($event)" />
+  <label>
+    <input type="checkbox" [checked]="showOnlyActive()" (change)="toggleOnlyActive($event)" />
+    Solo activas
+  </label>
+</section>
+
+@if (filteredPromotions().length === 0) {
+  <app-empty-state title="Sin promociones" description="No encontramos promociones con estos filtros." />
+} @else {
+  <section class="grid">
+    @for (promotion of filteredPromotions(); track promotion.id) {
+      <article class="card promo-card">
+        <div class="head">
+          <h3>{{ promotion.name }}</h3>
+          <app-status-badge [label]="promotion.is_active ? 'Activa' : 'Inactiva'" />
+        </div>
+        <p>{{ promotion.description || 'Sin descripción.' }}</p>
+        <div class="price-row">
+          @if (promotion.original_price) {
+            <span class="old-price">{{ promotion.original_price | currency: 'PEN' : 'symbol-narrow' }}</span>
+          }
+          <strong>{{ promotion.promo_price | currency: 'PEN' : 'symbol-narrow' }}</strong>
+        </div>
+
+        <small>{{ promotion.products.length }} producto(s) asociados</small>
+
+        <div class="actions">
+          <button class="btn-secondary" type="button" (click)="openEdit(promotion)">Editar</button>
+          <button class="btn-secondary" type="button" (click)="toggleStatus(promotion)">
+            {{ promotion.is_active ? 'Desactivar' : 'Activar' }}
+          </button>
+          <button class="btn-secondary" type="button" (click)="openDelete(promotion)">Eliminar</button>
+        </div>
+      </article>
+    }
+  </section>
+}
+
+<app-promotion-form-modal
+  [open]="showFormModal()"
+  [saving]="saving()"
+  [promotion]="editingPromotion()"
+  [products]="products()"
+  (close)="closeForm()"
+  (save)="submitPromotion($event)"
+/>
+
+<app-confirm-modal
+  [open]="showDeleteModal()"
+  title="Eliminar promoción"
+  description="Esta acción no se puede deshacer."
+  (close)="showDeleteModal.set(false)"
+  (confirm)="confirmDelete()"
+/>

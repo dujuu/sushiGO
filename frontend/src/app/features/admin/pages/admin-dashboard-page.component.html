@@ -1,0 +1,14 @@
+<app-page-header
+  title="Panel administrativo"
+  subtitle="Control rápido de catálogo, promociones y respaldo de pedidos"
+/>
+
+<section class="stats">
+  <app-stat-card label="Productos totales" [value]="totalProducts()" />
+  <app-stat-card label="Productos disponibles" [value]="availableProducts()" />
+  <app-stat-card label="Productos ocultos/sin stock" [value]="unavailableProducts()" />
+  <app-stat-card label="Promociones activas" [value]="activePromotions()" />
+  <app-stat-card label="Promociones inactivas" [value]="inactivePromotions()" />
+  <app-stat-card label="Pedidos respaldo" [value]="totalOrders()" />
+  <app-stat-card label="Pedidos de hoy" [value]="todayOrders()" />
+</section>

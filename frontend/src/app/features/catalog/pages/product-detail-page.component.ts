@@ -10,21 +10,8 @@ import { CartService } from '../../cart/services/cart.service';
   selector: 'app-product-detail-page',
   standalone: true,
   imports: [AsyncPipe, CurrencyPipe, ImageFallbackDirective],
-  template: `
-    @if (product$ | async; as product) {
-      <article class="card">
-        <img [src]="product.imageUrl" [alt]="product.name" appImageFallback />
-        <h1>{{ product.name }}</h1>
-        <p>{{ product.description }}</p>
-        <p><strong>Ingredientes:</strong> {{ product.ingredients.join(', ') }}</p>
-        <p><strong>{{ product.price | currency : 'CLP' : 'symbol' : '1.0-0' }}</strong></p>
-        <button class="btn-primary" (click)="add(product)">Agregar al carrito</button>
-      </article>
-    }
-  `,
-  styles: [
-    `img { width: 100%; max-width: 420px; border-radius: 12px; margin-bottom: 1rem; }`,
-  ],
+  templateUrl: './product-detail-page.component.html',
+  styleUrls: ['./product-detail-page.component.css'],
 })
 export class ProductDetailPageComponent {
   private readonly route = inject(ActivatedRoute);

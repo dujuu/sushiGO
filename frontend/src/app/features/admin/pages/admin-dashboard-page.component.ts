@@ -10,43 +10,8 @@ import { OrderService } from '../../../core/services/order.service';
   selector: 'app-admin-dashboard-page',
   standalone: true,
   imports: [PageHeaderComponent, StatCardComponent],
-  template: `
-    <app-page-header
-      title="Panel administrativo"
-      subtitle="Control rápido de catálogo, promociones y respaldo de pedidos"
-    />
-
-    <section class="stats">
-      <app-stat-card label="Productos totales" [value]="totalProducts()" />
-      <app-stat-card label="Productos disponibles" [value]="availableProducts()" />
-      <app-stat-card label="Productos ocultos/sin stock" [value]="unavailableProducts()" />
-      <app-stat-card label="Promociones activas" [value]="activePromotions()" />
-      <app-stat-card label="Promociones inactivas" [value]="inactivePromotions()" />
-      <app-stat-card label="Pedidos respaldo" [value]="totalOrders()" />
-      <app-stat-card label="Pedidos de hoy" [value]="todayOrders()" />
-    </section>
-  `,
-  styles: [
-    `
-      .stats {
-        display: grid;
-        gap: 0.7rem;
-        grid-template-columns: 1fr;
-      }
-
-      @media (min-width: 480px) {
-        .stats {
-          grid-template-columns: repeat(2, minmax(0, 1fr));
-        }
-      }
-
-      @media (min-width: 1024px) {
-        .stats {
-          grid-template-columns: repeat(3, minmax(0, 1fr));
-        }
-      }
-    `,
-  ],
+  templateUrl: './admin-dashboard-page.component.html',
+  styleUrls: ['./admin-dashboard-page.component.css'],
 })
 export class AdminDashboardPageComponent implements OnInit {
   private readonly productService = inject(ProductService);

@@ -1,0 +1,21 @@
+@if (open()) {
+  <div class="backdrop" (click)="close.emit()">
+    <form class="card modal" [formGroup]="form" (click)="$event.stopPropagation()" (ngSubmit)="submit()">
+      <h3 class="display-font">Actualizar estado</h3>
+
+      <label>Estado</label>
+      <select formControlName="status">
+        @for (status of statuses; track status) {
+          <option [value]="status">{{ status }}</option>
+        }
+      </select>
+
+      <div class="actions">
+        <button class="btn-secondary" type="button" (click)="close.emit()">Cancelar</button>
+        <button class="btn-primary" type="submit" [disabled]="saving() || form.invalid">
+          {{ saving() ? 'Guardando...' : 'Guardar' }}
+        </button>
+      </div>
+    </form>
+  </div>
+}

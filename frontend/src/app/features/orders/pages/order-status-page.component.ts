@@ -8,17 +8,7 @@ import { OrdersService } from '../services/orders.service';
   selector: 'app-order-status-page',
   standalone: true,
   imports: [AsyncPipe],
-  template: `
-    <h1>Estado del pedido</h1>
-    @if (status$ | async; as status) {
-      <article class="card">
-        <p><strong>ID:</strong> {{ status.id }}</p>
-        <p><strong>Número:</strong> {{ status.order_number }}</p>
-        <p><strong>Estado:</strong> {{ status.status }}</p>
-        <p><strong>Actualizado:</strong> {{ status.updated_at }}</p>
-      </article>
-    }
-  `,
+  templateUrl: './order-status-page.component.html',
 })
 export class OrderStatusPageComponent {
   private readonly route = inject(ActivatedRoute);

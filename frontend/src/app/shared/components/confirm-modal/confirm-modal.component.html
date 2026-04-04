@@ -1,0 +1,12 @@
+@if (open()) {
+  <div class="backdrop" (click)="close.emit()">
+    <section class="modal card" (click)="$event.stopPropagation()">
+      <h3 class="display-font">{{ title() }}</h3>
+      <p>{{ description() }}</p>
+      <div class="actions">
+        <button class="btn-secondary" type="button" (click)="close.emit()">Cancelar</button>
+        <button class="btn-primary" type="button" (click)="confirm.emit()">Confirmar</button>
+      </div>
+    </section>
+  </div>
+}

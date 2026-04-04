@@ -30,15 +30,15 @@ export const routes: Routes = [
 			{
 				path: 'home',
 				loadComponent: () =>
-					import('./features/home/pages/home.component').then(
-						(m) => m.HomeComponent,
+					import('./features/catalog/pages/catalog-page.component').then(
+						(m) => m.CatalogPageComponent,
 					),
 			},
 			{
 				path: 'catalog',
 				loadComponent: () =>
-					import('./features/catalog/pages/catalog-page.component').then(
-						(m) => m.CatalogPageComponent,
+					import('./features/home/pages/home.component').then(
+						(m) => m.HomeComponent,
 					),
 			},
 			{

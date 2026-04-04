@@ -1,0 +1,52 @@
+<app-page-header title="Gestión de productos" subtitle="Crea, edita y controla disponibilidad.">
+  <button class="btn-primary" type="button" (click)="openCreate()">Nuevo producto</button>
+</app-page-header>
+
+<section class="toolbar card">
+  <app-search-bar [value]="search()" placeholder="Buscar por nombre" (valueChange)="search.set($event)" />
+  <label>
+    <input type="checkbox" [checked]="showOnlyAvailable()" (change)="toggleOnlyAvailable($event)" />
+    Solo disponibles
+  </label>
+</section>
+
+@if (filteredProducts().length === 0) {
+  <app-empty-state title="Sin productos" description="No encontramos productos con estos filtros." />
+} @else {
+  <section class="grid">
+    @for (product of filteredProducts(); track product.id) {
+      <article class="card product-card">
+        <div class="head">
+          <h3>{{ product.name }}</h3>
+          <app-status-badge [label]="product.is_available ? 'Activa' : 'Inactiva'" />
+        </div>
+        <p>{{ product.description || 'Sin descripción.' }}</p>
+        <strong>{{ product.price | currency: 'PEN' : 'symbol-narrow' }}</strong>
+
+        <div class="actions">
+          <button class="btn-secondary" type="button" (click)="openEdit(product)">Editar</button>
+          <button class="btn-secondary" type="button" (click)="toggleAvailability(product)">
+            {{ product.is_available ? 'Desactivar' : 'Activar' }}
+          </button>
+          <button class="btn-secondary" type="button" (click)="openDelete(product)">Eliminar</button>
+        </div>
+      </article>
+    }
+  </section>
+}
+
+<app-product-form-modal
+  [open]="showFormModal()"
+  [saving]="saving()"
+  [product]="editingProduct()"
+  (close)="closeForm()"
+  (save)="submitProduct($event)"
+/>
+
+<app-confirm-modal
+  [open]="showDeleteModal()"
+  title="Eliminar producto"
+  description="Esta acción no se puede deshacer."
+  (close)="showDeleteModal.set(false)"
+  (confirm)="confirmDelete()"
+/>

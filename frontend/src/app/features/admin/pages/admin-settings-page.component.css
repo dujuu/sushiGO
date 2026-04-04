@@ -1,0 +1,29 @@
+      .form {
+        display: grid;
+        gap: 0.55rem;
+        max-width: 760px;
+      }
+
+      h3 {
+        font-size: 1rem;
+        margin: 0.4rem 0 0.1rem;
+      }
+
+      label {
+        color: #d8d0c9;
+        font-size: 0.78rem;
+        font-weight: 700;
+      }
+
+      input,
+      textarea {
+        background: var(--surface-2);
+        border: 1px solid var(--border-2);
+        border-radius: 10px;
+        color: var(--white);
+        padding: 0.6rem 0.7rem;
+      }
+
+      .actions {
+        margin-top: 0.5rem;
+      }

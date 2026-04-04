@@ -1,0 +1,7 @@
+<div class="preview">
+  @if (imageUrl()) {
+    <img [src]="imageUrl()" [alt]="alt()" />
+  } @else {
+    <p>Sin imagen de referencia</p>
+  }
+</div>
